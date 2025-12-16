@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import TerminalInput, { type GrokModel } from "./TerminalInput";
+import TerminalInput, { type AIModel } from "./TerminalInput";
 import AnalysisOutput from "./AnalysisOutput";
 import type { MarketAnalysis, AnalyzeMarketResponse } from "@/types/api";
 
@@ -31,7 +31,7 @@ const Terminal = () => {
   const [error, setError] = useState<string | null>(null);
   const [shouldClearInput, setShouldClearInput] = useState(false);
 
-  const handleSubmit = async (url: string, model: GrokModel) => {
+  const handleSubmit = async (url: string, model: AIModel) => {
     setIsLoading(true);
     setError(null);
     setShouldClearInput(false);

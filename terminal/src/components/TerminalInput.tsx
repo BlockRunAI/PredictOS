@@ -3,21 +3,52 @@
 import { useState, useEffect, FormEvent, useRef } from "react";
 import { Send, Link2, ChevronDown } from "lucide-react";
 
+// Grok Models (xAI)
 export type GrokModel = 
   | "grok-4-1-fast-reasoning"
   | "grok-4-1-fast-non-reasoning"
   | "grok-4-fast-reasoning"
   | "grok-4-fast-non-reasoning";
 
-export const GROK_MODELS: { value: GrokModel; label: string }[] = [
-  { value: "grok-4-1-fast-reasoning", label: "Grok 4.1 Fast (Reasoning)" },
-  { value: "grok-4-1-fast-non-reasoning", label: "Grok 4.1 Fast (Non-Reasoning)" },
-  { value: "grok-4-fast-reasoning", label: "Grok 4 Fast (Reasoning)" },
-  { value: "grok-4-fast-non-reasoning", label: "Grok 4 Fast (Non-Reasoning)" },
+// OpenAI Models
+export type OpenAIModel =
+  | "gpt-5.2"
+  | "gpt-5.1"
+  | "gpt-5-nano"
+  | "gpt-4.1"
+  | "gpt-4.1-mini";
+
+// Combined AI Model type
+export type AIModel = GrokModel | OpenAIModel;
+
+// Model provider type
+export type AIProvider = "grok" | "openai";
+
+interface ModelOption {
+  value: AIModel;
+  label: string;
+  provider: AIProvider;
+}
+
+export const GROK_MODELS: ModelOption[] = [
+  { value: "grok-4-1-fast-reasoning", label: "Grok 4.1 Fast (Reasoning)", provider: "grok" },
+  { value: "grok-4-1-fast-non-reasoning", label: "Grok 4.1 Fast (Non-Reasoning)", provider: "grok" },
+  { value: "grok-4-fast-reasoning", label: "Grok 4 Fast (Reasoning)", provider: "grok" },
+  { value: "grok-4-fast-non-reasoning", label: "Grok 4 Fast (Non-Reasoning)", provider: "grok" },
 ];
 
+export const OPENAI_MODELS: ModelOption[] = [
+  { value: "gpt-5.2", label: "GPT-5.2", provider: "openai" },
+  { value: "gpt-5.1", label: "GPT-5.1", provider: "openai" },
+  { value: "gpt-5-nano", label: "GPT-5 Nano", provider: "openai" },
+  { value: "gpt-4.1", label: "GPT-4.1", provider: "openai" },
+  { value: "gpt-4.1-mini", label: "GPT-4.1 Mini", provider: "openai" },
+];
+
+export const ALL_MODELS: ModelOption[] = [...GROK_MODELS, ...OPENAI_MODELS];
+
 interface TerminalInputProps {
-  onSubmit: (url: string, model: GrokModel) => void;
+  onSubmit: (url: string, model: AIModel) => void;
   isLoading: boolean;
   shouldClear?: boolean;
 }
@@ -35,7 +66,7 @@ const TerminalInput = ({ onSubmit, isLoading, shouldClear }: TerminalInputProps)
   const [input, setInput] = useState("");
   const [dots, setDots] = useState("");
   const [messageIndex, setMessageIndex] = useState(0);
-  const [selectedModel, setSelectedModel] = useState<GrokModel>("grok-4-1-fast-reasoning");
+  const [selectedModel, setSelectedModel] = useState<AIModel>("grok-4-1-fast-reasoning");
   const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
   const prevShouldClear = useRef(shouldClear);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -96,8 +127,13 @@ const TerminalInput = ({ onSubmit, isLoading, shouldClear }: TerminalInputProps)
     }
   };
 
-  const getModelLabel = (model: GrokModel) => {
-    return GROK_MODELS.find(m => m.value === model)?.label || model;
+  const getModelLabel = (model: AIModel) => {
+    return ALL_MODELS.find(m => m.value === model)?.label || model;
+  };
+
+  const getProviderBadge = (model: AIModel) => {
+    const modelOption = ALL_MODELS.find(m => m.value === model);
+    return modelOption?.provider === "openai" ? "OpenAI" : "Grok";
   };
 
   return (
@@ -118,15 +154,61 @@ const TerminalInput = ({ onSubmit, isLoading, shouldClear }: TerminalInputProps)
             disabled={isLoading}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary/50 border border-border text-[10px] text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-mono whitespace-nowrap"
           >
+            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+              getProviderBadge(selectedModel) === "OpenAI" 
+                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50" 
+                : "bg-orange-500/20 text-orange-400 border border-orange-500/50"
+            }`}>
+              {getProviderBadge(selectedModel)}
+            </span>
             <span className="hidden sm:inline">{getModelLabel(selectedModel)}</span>
             <span className="sm:hidden">Model</span>
             <ChevronDown className={`w-3 h-3 transition-transform ${isModelDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
           
           {isModelDropdownOpen && (
-            <div className="absolute right-0 top-full mt-1 w-64 bg-card border border-border rounded-lg shadow-xl z-[100] overflow-hidden">
+            <div className="absolute right-0 top-full mt-1 w-72 bg-card border border-border rounded-lg shadow-xl z-[100] overflow-hidden max-h-[400px] overflow-y-auto">
+              {/* Grok Section */}
+              <div className="px-3 py-2 bg-orange-500/10 border-b border-border sticky top-0">
+                <div className="flex items-center gap-2">
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/50">
+                    xAI
+                  </span>
+                  <span className="text-xs font-semibold text-orange-400">Grok Models</span>
+                </div>
+              </div>
               <div className="py-1">
                 {GROK_MODELS.map((model) => (
+                  <button
+                    key={model.value}
+                    type="button"
+                    onClick={() => {
+                      setSelectedModel(model.value);
+                      setIsModelDropdownOpen(false);
+                    }}
+                    className={`w-full px-4 py-2.5 text-left text-sm font-mono transition-colors ${
+                      selectedModel === model.value
+                        ? 'bg-primary/20 text-primary'
+                        : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                    }`}
+                  >
+                    <span className="block">{model.label}</span>
+                    <span className="block text-[10px] opacity-60 mt-0.5">{model.value}</span>
+                  </button>
+                ))}
+              </div>
+              
+              {/* OpenAI Section */}
+              <div className="px-3 py-2 bg-emerald-500/10 border-y border-border sticky top-0">
+                <div className="flex items-center gap-2">
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/50">
+                    OpenAI
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-400">GPT Models</span>
+                </div>
+              </div>
+              <div className="py-1">
+                {OPENAI_MODELS.map((model) => (
                   <button
                     key={model.value}
                     type="button"

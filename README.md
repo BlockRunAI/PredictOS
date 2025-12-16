@@ -49,7 +49,8 @@ Whether you're a casual trader looking for quick market analysis or a power user
 
 <div align="center">
   <a href="https://domeapi.io/"><img src="https://img.shields.io/badge/Powered%20by-Dome%20API-00D4AA?style=for-the-badge" alt="Dome API" /></a>
-  <a href="https://x.ai/"><img src="https://img.shields.io/badge/AI-Grok%204-orange?style=for-the-badge" alt="Grok AI" /></a>
+  <a href="https://x.ai/"><img src="https://img.shields.io/badge/AI-xAI%20Grok-orange?style=for-the-badge" alt="xAI Grok" /></a>
+  <a href="https://openai.com/"><img src="https://img.shields.io/badge/AI-OpenAI%20GPT-10a37f?style=for-the-badge" alt="OpenAI GPT" /></a>
 </div>
 
 ## 🎯 Current Features (v0.1)
@@ -87,7 +88,7 @@ PredictOS/
     ├── migrations/                  # DB migrations (future features)
     └── functions/
         ├── _shared/                 # Shared utilities
-        │   ├── ai/                  # Grok AI integration
+        │   ├── ai/                  # AI integrations (xAI Grok & OpenAI)
         │   └── dome/                # Dome API client
         ├── analyze-event-markets/   # Market analysis endpoint
         └── <feature-name>/          # Future edge functions
@@ -124,8 +125,15 @@ Edit `.env.local` with your credentials:
 
 ```env
 DOME_API_KEY=your_dome_api_key      # Get from https://domeapi.io
+
+# AI Provider (only one is required)
 XAI_API_KEY=your_xai_api_key        # Get from https://x.ai
+OPENAI_API_KEY=your_openai_api_key  # Get from https://platform.openai.com
 ```
+
+> 💡 **Note:** You only need ONE AI provider API key. If you have an xAI API key, you can use Grok models. If you have an OpenAI API key, you can use GPT models. You can also configure both to switch between providers.  
+> 
+> 🚀 **Coming soon:** You'll be able to run multiple agents in parallel for more powerful, concurrent analyses!
 
 Start the Supabase services:
 
@@ -188,7 +196,8 @@ Your PredictOS terminal will be running at [http://localhost:3000](http://localh
 **Backend:**
 - [Supabase Edge Functions](https://supabase.com/docs/guides/functions) — Serverless Deno runtime
 - [Dome API](https://domeapi.io/) — Unified prediction market data
-- [Grok AI](https://x.ai/) — xAI's reasoning model
+- [xAI Grok](https://x.ai/) — xAI's reasoning models (Grok 4, Grok 4.1)
+- [OpenAI GPT](https://openai.com/) — OpenAI's language models (GPT-4.1, GPT-5)
 
 ## 🤝 Partners
 
@@ -236,6 +245,6 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 <div align="center">
   <p>Built with ❤️ by the PredictionXBT team</p>
-  <p><sub>Powered by <a href="https://domeapi.io/">Dome</a> & <a href="https://x.ai/">xAI Grok</a></sub></p>
+  <p><sub>Powered by <a href="https://domeapi.io/">Dome</a></sub></p>
 </div>
 

@@ -24,6 +24,66 @@ export interface GrokRequestPayload {
   };
 }
 
+// Types for OpenAI API requests and responses
+export interface OpenAIRequestInput {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
+
+export interface OpenAIRequestPayload {
+  model: string;
+  input: OpenAIRequestInput[];
+  temperature?: number | null;
+  top_p?: number | null;
+  max_output_tokens?: number | null;
+  store?: boolean;
+  text?: {
+    format: {
+      type: string;
+    };
+  };
+}
+
+export interface OpenAIUsage {
+  input_tokens: number;
+  input_tokens_details?: {
+    cached_tokens?: number;
+  };
+  output_tokens: number;
+  output_tokens_details?: {
+    reasoning_tokens?: number;
+  };
+  total_tokens: number;
+}
+
+export interface OpenAIOutputText {
+  type: "output_text";
+  text: string;
+  annotations?: unknown[];
+}
+
+export interface OpenAIMessage {
+  content: OpenAIOutputText[];
+  id: string;
+  role: "assistant";
+  type: "message";
+  status: "completed" | "failed" | "pending";
+}
+
+export type OpenAIOutputItem = OpenAIMessage;
+
+export interface OpenAIResponseResult {
+  created_at: number;
+  id: string;
+  model: string;
+  object: "response";
+  output: OpenAIOutputItem[];
+  temperature: number | null;
+  top_p: number | null;
+  usage: OpenAIUsage;
+  status: "completed" | "failed" | "pending";
+}
+
 export interface GrokUsage {
   input_tokens: number;
   input_tokens_details?: {

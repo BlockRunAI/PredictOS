@@ -13,7 +13,18 @@ import {
 } from "../_shared/dome/endpoints.ts";
 import { analyzeEventMarketsPrompt } from "../_shared/ai/prompts/analyzeEventMarkets.ts";
 import { callGrokResponses } from "../_shared/ai/callGrok.ts";
-import type { GrokMessage, GrokOutputText } from "../_shared/ai/types.ts";
+import { callOpenAIResponses } from "../_shared/ai/callOpenAI.ts";
+import type { GrokMessage, GrokOutputText, OpenAIMessage, OpenAIOutputText } from "../_shared/ai/types.ts";
+
+// OpenAI model identifiers
+const OPENAI_MODELS = ["gpt-5.2", "gpt-5.1", "gpt-5-nano", "gpt-4.1", "gpt-4.1-mini"];
+
+/**
+ * Determine if a model is an OpenAI model
+ */
+function isOpenAIModel(model: string): boolean {
+  return OPENAI_MODELS.includes(model) || model.startsWith("gpt-");
+}
 import type {
   AnalyzeMarketRequest,
   MarketAnalysis,
@@ -77,7 +88,8 @@ Deno.serve(async (req: Request) => {
     const { url, question, pmType, model } = requestBody;
     
     // Use provided model or default to grok-4-1-fast-reasoning
-    const grokModel = model || "grok-4-1-fast-reasoning";
+    const selectedModel = model || "grok-4-1-fast-reasoning";
+    const useOpenAI = isOpenAIModel(selectedModel);
 
     // Validate required parameters
     if (!url) {
@@ -221,32 +233,68 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Build prompt and call Grok
+    // Build prompt and call AI
     const { systemPrompt, userPrompt } = analyzeEventMarketsPrompt(markets, eventIdentifier, question, pmType);
 
-    console.log("Calling Grok AI with model:", grokModel);
-    const grokResponse = await callGrokResponses(
-      userPrompt,
-      systemPrompt,
-      "json_object",
-      grokModel,
-      3
-    );
-    console.log("Grok response received, tokens:", grokResponse.usage?.total_tokens);
+    let aiResponseModel: string;
+    let aiTokensUsed: number | undefined;
+    let text: string;
 
-    // Parse Grok response
-    const content: GrokOutputText[] = [];
-    for (const item of grokResponse.output) {
-      if (item.type === "message") {
-        const messageItem = item as GrokMessage;
-        content.push(...messageItem.content);
+    if (useOpenAI) {
+      console.log("Calling OpenAI with model:", selectedModel);
+      const openaiResponse = await callOpenAIResponses(
+        userPrompt,
+        systemPrompt,
+        "json_object",
+        selectedModel,
+        3
+      );
+      console.log("OpenAI response received, tokens:", openaiResponse.usage?.total_tokens);
+
+      aiResponseModel = openaiResponse.model;
+      aiTokensUsed = openaiResponse.usage?.total_tokens;
+
+      // Parse OpenAI response
+      const content: OpenAIOutputText[] = [];
+      for (const item of openaiResponse.output) {
+        if (item.type === "message") {
+          const messageItem = item as OpenAIMessage;
+          content.push(...messageItem.content);
+        }
       }
-    }
 
-    const text = content
-      .map((item) => item.text)
-      .filter((t) => t !== undefined)
-      .join("\n");
+      text = content
+        .map((item) => item.text)
+        .filter((t) => t !== undefined)
+        .join("\n");
+    } else {
+      console.log("Calling Grok AI with model:", selectedModel);
+      const grokResponse = await callGrokResponses(
+        userPrompt,
+        systemPrompt,
+        "json_object",
+        selectedModel,
+        3
+      );
+      console.log("Grok response received, tokens:", grokResponse.usage?.total_tokens);
+
+      aiResponseModel = grokResponse.model;
+      aiTokensUsed = grokResponse.usage?.total_tokens;
+
+      // Parse Grok response
+      const content: GrokOutputText[] = [];
+      for (const item of grokResponse.output) {
+        if (item.type === "message") {
+          const messageItem = item as GrokMessage;
+          content.push(...messageItem.content);
+        }
+      }
+
+      text = content
+        .map((item) => item.text)
+        .filter((t) => t !== undefined)
+        .join("\n");
+    }
 
     let analysisResult: MarketAnalysis;
     try {
@@ -296,8 +344,8 @@ Deno.serve(async (req: Request) => {
         marketsCount: markets.length,
         question,
         processingTimeMs,
-        grokModel: grokResponse.model,
-        grokTokensUsed: grokResponse.usage?.total_tokens,
+        grokModel: aiResponseModel,
+        grokTokensUsed: aiTokensUsed,
       },
       "pm-market-url": pmMarketUrl,
     };

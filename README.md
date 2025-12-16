@@ -8,6 +8,8 @@
 
   <p>Build, analyze, and trade on prediction markets with AI-powered insights, automated strategies, and unified market access.</p>
 
+  <p><em>Built by <a href="https://predictionxbt.fun">PredictionXBT</a>, the team behind <strong>Predict</strong> — the Layer 1 Social Prediction Market</em></p>
+
 </div>
 
 <div align="center">
@@ -53,6 +55,26 @@ Whether you're a casual trader looking for quick market analysis or a power user
   <a href="https://openai.com/"><img src="https://img.shields.io/badge/AI-OpenAI%20GPT-10a37f?style=for-the-badge" alt="OpenAI GPT" /></a>
 </div>
 
+## 💎 The $PREDICT Token
+
+**$PREDICT** serves as the foundational pillar of the open-source PredictOS framework, powering a decentralized, community-driven Layer 1 ecosystem for social prediction markets, trading, and participation.
+
+As the primary utility token, $PREDICT is deeply integrated across the platform:
+
+- **Launchpad Liquidity** — The launchpad will be seeded with $PREDICT liquidity to ensure depth, stability, and fair access for new project discoveries and token launches
+- **No-Code Builder Access** — Essential for accessing upcoming no-code builder tools that allow anyone to effortlessly create custom prediction markets, agents, or interfaces with premium features unlocked through holding or using $PREDICT
+- **Ecosystem Engagement** — Required for full participation in the broader Predict ecosystem, including creating markets, accessing advanced analytics, AI-driven signals, and governance
+
+### 🔥 Staking & Rewards
+
+A key feature driving adoption is the ability to **stake $PREDICT for attractive APY rewards**, delivering passive yields while empowering holders with enhanced capabilities:
+
+- **Unlocked Trading Abilities** — Enhanced access to trading features and boosted capabilities
+- **Prediction Market Access** — Boosted access to the native prediction market for betting on events, outcomes, or price movements
+- **Long-Term Value** — Staking and liquidity provision promotes long-term holding, strengthens network security, and redistributes value directly to the community
+
+> 💡 **$PREDICT is more than a token** — it's the core fuel powering adoption, liquidity, and innovation in the live PredictOS framework, establishing it as a leader in decentralized social prediction markets.
+
 ## 🎯 Current Features (v0.1)
 
 | Feature | Status | Description |
@@ -70,8 +92,8 @@ Whether you're a casual trader looking for quick market analysis or a power user
 | **Copytrading** | Automatically copy top-performing traders |
 | **Arbitrage Opportunity** | Detect and exploit cross-platform price differences |
 | **Perps Trading / Leverage** | Leveraged prediction market positions |
-| **$Predict Staking** | Stake tokens to earn protocol rewards |
-| **Predict Protocol SDK** | Developer toolkit for building on PredictOS |
+| **$Predict Staking** | Stake for APY rewards, unlock enhanced trading abilities, and get boosted access to prediction markets |
+| **Predict Protocol SDK** | For trading Social markets built on Predict (currently Testnet on [predictionxbt.fun](https://predictionxbt.fun)) |
 
 ## 📦 Architecture
 

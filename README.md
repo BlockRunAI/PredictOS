@@ -261,7 +261,7 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ---
 
-## Star History [![Star History Chart](https://api.star-history.com/svg?repos=PredictionXBT/PredictOS&type=date&legend=top-left)](https://www.star-history.com/#PredictionXBT/PredictOS&type=date&legend=top-left)
+## Star History [![Star History Chart](https://api.star-history.com/svg?repos=PredictionXBT/PredictOS&type=Date&theme=dark&v=1)](https://star-history.com/#PredictionXBT/PredictOS&Date)
 
 ---
 

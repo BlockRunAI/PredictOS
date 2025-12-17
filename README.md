@@ -142,7 +142,7 @@ cp .env.example .env.local
 Edit `.env.local` with your credentials:
 
 ```env
-DOME_API_KEY=your_dome_api_key      # Get from https://domeapi.io
+DOME_API_KEY=your_dome_api_key      # Get from https://dashboard.domeapi.io
 
 # AI Provider (only one is required)
 XAI_API_KEY=your_xai_api_key        # Get from https://x.ai

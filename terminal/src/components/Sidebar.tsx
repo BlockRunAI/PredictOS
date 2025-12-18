@@ -98,11 +98,6 @@ export function Sidebar({ activeTab }: SidebarProps) {
               {!collapsed && (
                 <div className="flex items-center gap-2 flex-1">
                   <span className={cn("text-sm font-medium truncate", !item.available && "opacity-40")}>{item.label}</span>
-                  {item.version && (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-success/20 text-success border border-success font-mono font-bold">
-                      {item.version}
-                    </span>
-                  )}
                   {!item.available && (
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-destructive/30 text-destructive border border-destructive font-mono uppercase font-bold">
                       Soon

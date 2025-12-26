@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
         question: body.question,
         pmType,
         model: body.model,
+        dataProvider: body.dataProvider || 'dome',
       }),
     });
 

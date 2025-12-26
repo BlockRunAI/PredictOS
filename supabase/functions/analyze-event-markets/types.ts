@@ -2,6 +2,9 @@
  * Type definitions for analyze-event-markets edge function
  */
 
+/** Data provider for market data */
+export type DataProvider = 'dome' | 'dflow';
+
 /**
  * Request body for the analyze-market endpoint
  */
@@ -14,6 +17,8 @@ export interface AnalyzeMarketRequest {
   pmType?: string;
   /** Grok model to use for analysis (default: grok-4-1-fast-reasoning) */
   model?: string;
+  /** Data provider for market data (dome or dflow) - defaults to dome */
+  dataProvider?: DataProvider;
 }
 
 /**

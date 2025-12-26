@@ -6,7 +6,7 @@ import TerminalInput, { type AIModel } from "./TerminalInput";
 import PolyfactualInput from "./PolyfactualInput";
 import AnalysisOutput from "./AnalysisOutput";
 import PolyfactualOutput from "./PolyfactualOutput";
-import type { MarketAnalysis, AnalyzeMarketResponse } from "@/types/api";
+import type { MarketAnalysis, AnalyzeMarketResponse, DataProvider } from "@/types/api";
 import type { PolyfactualResearchResponse, PolyfactualCitation } from "@/types/polyfactual";
 
 type TabType = "markets" | "polyfactual";
@@ -53,7 +53,7 @@ const Terminal = () => {
   const [polyfactualError, setPolyfactualError] = useState<string | null>(null);
   const [shouldClearPolyfactualInput, setShouldClearPolyfactualInput] = useState(false);
 
-  const handleMarketSubmit = async (url: string, model: AIModel) => {
+  const handleMarketSubmit = async (url: string, model: AIModel, dataProvider: DataProvider) => {
     setIsMarketLoading(true);
     setMarketError(null);
     setShouldClearMarketInput(false);
@@ -74,6 +74,7 @@ const Terminal = () => {
           url,
           question: "What is the best trading opportunity in this market? Analyze the probability and provide a recommendation.",
           model,
+          dataProvider,
         }),
       });
 

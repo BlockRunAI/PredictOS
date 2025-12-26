@@ -6,11 +6,15 @@
  */
 
 import { 
-  getKalshiMarketsByEvent,
+  getKalshiMarketsByEvent as getDomeKalshiMarketsByEvent,
   getPolymarketMarkets,
-  buildKalshiMarketUrl,
+  buildKalshiMarketUrl as buildDomeKalshiMarketUrl,
   buildPolymarketUrl,
 } from "../_shared/dome/endpoints.ts";
+import {
+  getKalshiMarketsByEvent as getDFlowKalshiMarketsByEvent,
+  buildKalshiMarketUrl as buildDFlowKalshiMarketUrl,
+} from "../_shared/dflow/endpoints.ts";
 import { analyzeEventMarketsPrompt } from "../_shared/ai/prompts/analyzeEventMarkets.ts";
 import { callGrokResponses } from "../_shared/ai/callGrok.ts";
 import { callOpenAIResponses } from "../_shared/ai/callOpenAI.ts";
@@ -85,11 +89,14 @@ Deno.serve(async (req: Request) => {
     }
 
     // Extract parameters
-    const { url, question, pmType, model } = requestBody;
+    const { url, question, pmType, model, dataProvider } = requestBody;
     
     // Use provided model or default to grok-4-1-fast-reasoning
     const selectedModel = model || "grok-4-1-fast-reasoning";
     const useOpenAI = isOpenAIModel(selectedModel);
+    
+    // Use provided dataProvider or default to dome
+    const selectedDataProvider = dataProvider || "dome";
 
     // Validate required parameters
     if (!url) {
@@ -135,22 +142,27 @@ Deno.serve(async (req: Request) => {
       }
 
       eventIdentifier = eventTicker;
-      console.log("Starting Kalshi analysis via Dome API:", { eventTicker, question });
+      const providerName = selectedDataProvider === 'dflow' ? 'DFlow' : 'Dome';
+      console.log(`Starting Kalshi analysis via ${providerName} API:`, { eventTicker, question, dataProvider: selectedDataProvider });
 
-      // Fetch all markets for the event via Dome API
+      // Fetch all markets for the event via selected API (Dome or DFlow)
       try {
-        markets = await getKalshiMarketsByEvent(eventTicker);
-        console.log(`Found ${markets.length} markets for Kalshi event:`, eventTicker);
+        if (selectedDataProvider === 'dflow') {
+          markets = await getDFlowKalshiMarketsByEvent(eventTicker);
+        } else {
+          markets = await getDomeKalshiMarketsByEvent(eventTicker);
+        }
+        console.log(`Found ${markets.length} markets for Kalshi event via ${providerName}:`, eventTicker);
       } catch (error) {
-        console.error("Failed to fetch Kalshi markets:", error);
+        console.error(`Failed to fetch Kalshi markets via ${providerName}:`, error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         const isNotFound = errorMessage.includes("404") || errorMessage.toLowerCase().includes("not found");
         return new Response(
           JSON.stringify({
             success: false,
             error: isNotFound
-              ? `Event '${eventTicker}' not found on Kalshi. Please verify the URL is correct.`
-              : `Failed to fetch markets from Kalshi for event '${eventTicker}': ${errorMessage}`,
+              ? `Event '${eventTicker}' not found on Kalshi (via ${providerName}). Please verify the URL is correct.`
+              : `Failed to fetch markets from Kalshi for event '${eventTicker}' via ${providerName}: ${errorMessage}`,
             metadata: {
               requestId: crypto.randomUUID(),
               timestamp: new Date().toISOString(),
@@ -159,6 +171,7 @@ Deno.serve(async (req: Request) => {
               question,
               processingTimeMs: Date.now() - startTime,
               platform: "Kalshi",
+              dataProvider: selectedDataProvider,
             },
           }),
           { status: isNotFound ? 404 : 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -327,7 +340,11 @@ Deno.serve(async (req: Request) => {
     let pmMarketUrl: string | undefined;
     if (analysisResult.ticker) {
       if (pmType === "Kalshi") {
-        pmMarketUrl = `Market on @Kalshi: ${buildKalshiMarketUrl(analysisResult.ticker)}`;
+        // Use the appropriate URL builder based on data provider
+        const kalshiUrl = selectedDataProvider === 'dflow' 
+          ? buildDFlowKalshiMarketUrl(analysisResult.ticker)
+          : buildDomeKalshiMarketUrl(analysisResult.ticker);
+        pmMarketUrl = `Market on @Kalshi: ${kalshiUrl}`;
       } else {
         // For Polymarket, use the event slug
         pmMarketUrl = `Market on @Polymarket: ${buildPolymarketUrl(eventIdentifier)}`;

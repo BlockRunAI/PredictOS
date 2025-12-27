@@ -294,4 +294,363 @@
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0; }
   }
+
+  /* Agentic Workflow Animations */
+  
+  /* Data flow pulse traveling down */
+  .data-flow-line {
+    position: relative;
+    width: 2px;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.3) 0%, hsl(var(--primary) / 0.1) 100%);
+  }
+  
+  .data-flow-line::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 12px;
+    background: linear-gradient(180deg, hsl(var(--primary)) 0%, transparent 100%);
+    border-radius: 3px;
+    animation: data-pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.8), 0 0 20px hsl(var(--primary) / 0.4);
+  }
+  
+  @keyframes data-pulse {
+    0% { top: -12px; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: calc(100% + 12px); opacity: 0; }
+  }
+  
+  /* Aggregator flow - violet theme */
+  .data-flow-line-aggregator {
+    background: linear-gradient(180deg, hsl(280 70% 50% / 0.3) 0%, hsl(280 70% 50% / 0.1) 100%);
+  }
+  
+  .data-flow-line-aggregator::before {
+    background: linear-gradient(180deg, hsl(280 70% 50%) 0%, transparent 100%);
+    box-shadow: 0 0 10px hsl(280 70% 50% / 0.8), 0 0 20px hsl(280 70% 50% / 0.4);
+  }
+  
+  /* OkBet flow - amber theme */
+  .data-flow-line-okbet {
+    background: linear-gradient(180deg, hsl(38 92% 50% / 0.3) 0%, hsl(38 92% 50% / 0.1) 100%);
+  }
+  
+  .data-flow-line-okbet::before {
+    background: linear-gradient(180deg, hsl(38 92% 50%) 0%, transparent 100%);
+    box-shadow: 0 0 10px hsl(38 92% 50% / 0.8), 0 0 20px hsl(38 92% 50% / 0.4);
+  }
+
+  /* Multiple parallel data streams */
+  .data-flow-multi::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 8px;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.7) 0%, transparent 100%);
+    border-radius: 3px;
+    animation: data-pulse 2s ease-in-out infinite 0.5s;
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.6);
+  }
+  
+  /* Processing ring animation */
+  .processing-ring {
+    animation: ring-rotate 3s linear infinite;
+  }
+  
+  @keyframes ring-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Orbiting particles around active agent */
+  .orbit-particles::before,
+  .orbit-particles::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    box-shadow: 0 0 8px hsl(var(--primary));
+  }
+  
+  .orbit-particles::before {
+    animation: orbit 2s linear infinite;
+  }
+  
+  .orbit-particles::after {
+    animation: orbit 2s linear infinite reverse;
+    animation-delay: -1s;
+  }
+  
+  @keyframes orbit {
+    0% { transform: rotate(0deg) translateX(20px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+  }
+  
+  /* Completion burst effect */
+  .completion-burst {
+    animation: burst 0.6s ease-out forwards;
+  }
+  
+  @keyframes burst {
+    0% {
+      box-shadow: 0 0 0 0 hsl(var(--success) / 0.6);
+    }
+    50% {
+      box-shadow: 0 0 20px 10px hsl(var(--success) / 0.3);
+    }
+    100% {
+      box-shadow: 0 0 0 0 hsl(var(--success) / 0);
+    }
+  }
+  
+  /* Aggregator burst - violet */
+  .completion-burst-violet {
+    animation: burst-violet 0.6s ease-out forwards;
+  }
+  
+  @keyframes burst-violet {
+    0% {
+      box-shadow: 0 0 0 0 hsl(280 70% 50% / 0.6);
+    }
+    50% {
+      box-shadow: 0 0 30px 15px hsl(280 70% 50% / 0.3);
+    }
+    100% {
+      box-shadow: 0 0 0 0 hsl(280 70% 50% / 0);
+    }
+  }
+  
+  /* OkBet burst - amber */
+  .completion-burst-amber {
+    animation: burst-amber 0.8s ease-out forwards;
+  }
+  
+  @keyframes burst-amber {
+    0% {
+      box-shadow: 0 0 0 0 hsl(38 92% 50% / 0.6);
+    }
+    50% {
+      box-shadow: 0 0 40px 20px hsl(38 92% 50% / 0.4);
+    }
+    100% {
+      box-shadow: 0 0 10px 0 hsl(38 92% 50% / 0.2);
+    }
+  }
+  
+  /* Neural network connector dots */
+  .neural-dots {
+    background-image: radial-gradient(circle, hsl(var(--primary) / 0.3) 1px, transparent 1px);
+    background-size: 8px 8px;
+    animation: neural-shift 4s linear infinite;
+  }
+  
+  @keyframes neural-shift {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 32px; }
+  }
+  
+  /* Gradient border animation */
+  .gradient-border-animate {
+    background: linear-gradient(90deg, 
+      hsl(var(--primary)) 0%, 
+      hsl(280 70% 50%) 25%,
+      hsl(var(--primary)) 50%,
+      hsl(280 70% 50%) 75%,
+      hsl(var(--primary)) 100%
+    );
+    background-size: 200% 100%;
+    animation: gradient-shift 3s linear infinite;
+  }
+  
+  @keyframes gradient-shift {
+    0% { background-position: 200% 0; }
+    100% { background-position: 0% 0; }
+  }
+  
+  /* Agent card hover lift */
+  .agent-card-active {
+    transform: translateY(-2px) scale(1.01);
+    transition: all 0.3s ease;
+  }
+  
+  /* Staggered fade in */
+  .stagger-fade-in {
+    animation: stagger-appear 0.5s ease-out forwards;
+  }
+  
+  @keyframes stagger-appear {
+    0% { 
+      opacity: 0; 
+      transform: translateY(10px) scale(0.98);
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  /* Typing effect for status messages */
+  .typing-dots::after {
+    content: '...';
+    animation: typing-dots 1.5s steps(4, end) infinite;
+  }
+  
+  @keyframes typing-dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+  }
+  
+  /* Circuit board pattern */
+  .circuit-pattern {
+    background-image: 
+      linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px),
+      linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 50% 50%, hsl(var(--primary) / 0.15) 2px, transparent 2px);
+    background-size: 20px 20px, 20px 20px, 20px 20px;
+    background-position: 0 0, 0 0, 10px 10px;
+  }
+  
+  /* Glow pulse for active processing */
+  .glow-pulse-active {
+    animation: glow-active 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes glow-active {
+    0%, 100% {
+      box-shadow: 0 0 15px hsl(var(--primary) / 0.4), 
+                  inset 0 0 10px hsl(var(--primary) / 0.1);
+    }
+    50% {
+      box-shadow: 0 0 30px hsl(var(--primary) / 0.6), 
+                  inset 0 0 20px hsl(var(--primary) / 0.15);
+    }
+  }
+  
+  /* Violet glow pulse */
+  .glow-pulse-violet {
+    animation: glow-violet 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes glow-violet {
+    0%, 100% {
+      box-shadow: 0 0 15px hsl(280 70% 50% / 0.4), 
+                  inset 0 0 10px hsl(280 70% 50% / 0.1);
+    }
+    50% {
+      box-shadow: 0 0 30px hsl(280 70% 50% / 0.6), 
+                  inset 0 0 20px hsl(280 70% 50% / 0.15);
+    }
+  }
+  
+  /* Shimmer effect for waiting states */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted) / 0.3) 25%,
+      hsl(var(--muted) / 0.5) 50%,
+      hsl(var(--muted) / 0.3) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  /* Connector arrow animation */
+  .connector-arrow {
+    animation: arrow-bounce 1s ease-in-out infinite;
+  }
+  
+  @keyframes arrow-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
+  }
+  
+  /* Status icon spin */
+  .status-processing {
+    animation: spin-smooth 1s linear infinite;
+  }
+  
+  @keyframes spin-smooth {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Success check animation */
+  .success-check {
+    animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  
+  @keyframes check-pop {
+    0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+    60% { transform: scale(1.2) rotate(0deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  
+  /* DNA helix effect for data transfer */
+  .helix-transfer {
+    position: relative;
+  }
+  
+  .helix-transfer::before,
+  .helix-transfer::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    top: 0;
+  }
+  
+  .helix-transfer::before {
+    background: hsl(var(--primary));
+    animation: helix-left 1.5s ease-in-out infinite;
+    left: calc(50% - 8px);
+  }
+  
+  .helix-transfer::after {
+    background: hsl(280 70% 50%);
+    animation: helix-right 1.5s ease-in-out infinite;
+    left: calc(50% + 4px);
+  }
+  
+  @keyframes helix-left {
+    0%, 100% { 
+      transform: translateX(-4px);
+      top: 0;
+    }
+    25% { transform: translateX(4px); }
+    50% { 
+      transform: translateX(-4px);
+      top: 50%;
+    }
+    75% { transform: translateX(4px); }
+  }
+  
+  @keyframes helix-right {
+    0%, 100% { 
+      transform: translateX(4px);
+      top: 0;
+    }
+    25% { transform: translateX(-4px); }
+    50% { 
+      transform: translateX(4px);
+      top: 50%;
+    }
+    75% { transform: translateX(-4px); }
+  }
 }

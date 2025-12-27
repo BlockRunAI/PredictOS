@@ -17,7 +17,10 @@ import {
   Wrench,
   Eye,
   Zap,
-  ExternalLink
+  ExternalLink,
+  ArrowDown,
+  Cpu,
+  CircleDot,
 } from "lucide-react";
 import Image from "next/image";
 import type { 
@@ -663,14 +666,68 @@ const AgenticMarketAnalysis = () => {
   const renderAgentStatus = (status: AgentConfig['status']) => {
     switch (status) {
       case 'running':
-        return <Loader2 className="w-4 h-4 text-primary animate-spin" />;
+        return (
+          <div className="relative">
+            <Cpu className="w-4 h-4 text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-6 h-6 border border-primary/50 rounded-full processing-ring" 
+                   style={{ borderTopColor: 'transparent', borderRightColor: 'transparent' }} />
+            </div>
+          </div>
+        );
       case 'completed':
-        return <CheckCircle2 className="w-4 h-4 text-success" />;
+        return <CheckCircle2 className="w-4 h-4 text-success success-check" />;
       case 'error':
         return <XCircle className="w-4 h-4 text-destructive" />;
       default:
-        return <Bot className="w-4 h-4 text-muted-foreground" />;
+        return <CircleDot className="w-4 h-4 text-muted-foreground" />;
     }
+  };
+
+  // Render the animated connector between workflow steps
+  const renderWorkflowConnector = (
+    variant: 'agent' | 'aggregator' | 'okbet' = 'agent',
+    isActive: boolean = false,
+    isCompleted: boolean = false
+  ) => {
+    const colorClass = variant === 'aggregator' 
+      ? 'data-flow-line-aggregator' 
+      : variant === 'okbet' 
+      ? 'data-flow-line-okbet' 
+      : '';
+    
+    return (
+      <div className="flex justify-center py-1 relative">
+        <div className={`relative h-8 ${isActive || isCompleted ? '' : 'opacity-30'}`}>
+          {/* Main connector line */}
+          <div className={`data-flow-line h-full ${colorClass} ${isActive ? 'data-flow-multi' : ''}`} />
+          
+          {/* Pulsing dot at bottom */}
+          {isCompleted && (
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
+              <div className={`w-2 h-2 rounded-full ${
+                variant === 'aggregator' ? 'bg-violet-400' : 
+                variant === 'okbet' ? 'bg-amber-400' : 'bg-primary'
+              } pulse-live`} />
+            </div>
+          )}
+        </div>
+        
+        {/* Side decorative dots */}
+        {isActive && (
+          <>
+            <div className={`absolute left-1/2 top-1/2 -translate-x-8 w-1 h-1 rounded-full ${
+              variant === 'aggregator' ? 'bg-violet-400/50' : 
+              variant === 'okbet' ? 'bg-amber-400/50' : 'bg-primary/50'
+            } animate-ping`} style={{ animationDuration: '2s' }} />
+            <div className={`absolute left-1/2 top-1/2 translate-x-6 w-1 h-1 rounded-full ${
+              variant === 'aggregator' ? 'bg-violet-400/50' : 
+              variant === 'okbet' ? 'bg-amber-400/50' : 'bg-primary/50'
+            } animate-ping`} style={{ animationDuration: '2s', animationDelay: '0.5s' }} />
+          </>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -743,19 +800,52 @@ const AgenticMarketAnalysis = () => {
             
             {isLoadingEvents && (
               <div className="px-4 pb-3">
-                <div className="flex items-center gap-2 text-xs text-primary font-mono">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  <span>Fetching market data...</span>
+                <div className="relative flex items-center gap-3 p-2 rounded-md bg-primary/5 border border-primary/20 overflow-hidden">
+                  {/* Animated background */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0"
+                       style={{ animation: 'shimmer 1.5s infinite' }} />
+                  
+                  <div className="relative flex items-center gap-2 text-xs text-primary font-mono">
+                    <div className="relative">
+                      <Link2 className="w-3.5 h-3.5" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-5 h-5 border border-primary/50 rounded-full processing-ring" 
+                             style={{ borderTopColor: 'transparent', borderRightColor: 'transparent' }} />
+                      </div>
+                    </div>
+                    <span className="typing-dots">Fetching market data</span>
+                  </div>
+                  
+                  {/* Progress dots */}
+                  <div className="relative ml-auto flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: '0ms' }} />
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: '200ms' }} />
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" style={{ animationDelay: '400ms' }} />
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
           {/* Agent Configuration Section */}
-          <div className="space-y-3">
+          <div className={`relative space-y-3 p-4 -mx-4 rounded-xl transition-all duration-500 ${
+            isRunning 
+              ? 'bg-gradient-to-b from-primary/5 via-transparent to-violet-500/5 circuit-pattern' 
+              : ''
+          }`}>
+            {/* Animated border when running */}
+            {isRunning && (
+              <div className="absolute inset-0 rounded-xl border border-primary/20 pointer-events-none overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-px gradient-border-animate" />
+                <div className="absolute bottom-0 left-0 right-0 h-px gradient-border-animate" style={{ animationDelay: '-1.5s' }} />
+              </div>
+            )}
+            
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <h3 className="font-display text-sm text-muted-foreground">ANALYSIS AGENTS</h3>
+                <h3 className={`font-display text-sm transition-colors ${
+                  isRunning ? 'text-primary' : 'text-muted-foreground'
+                }`}>ANALYSIS AGENTS</h3>
                 {/* Mode Toggle */}
                 <div className="flex items-center bg-secondary/50 rounded-md border border-border/50 overflow-hidden">
                   <button
@@ -796,222 +886,522 @@ const AgenticMarketAnalysis = () => {
               </button>
             </div>
 
+            {/* Workflow Pipeline Progress Indicator */}
+            {isRunning && (
+              <div className="mb-4 p-3 rounded-lg bg-card/40 border border-border/50 backdrop-blur-sm stagger-fade-in">
+                <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1">
+                  {/* Stage indicators */}
+                  {agents.map((agent, index) => {
+                    const isActive = agent.status === 'running';
+                    const isComplete = agent.status === 'completed';
+                    const isPending = agent.status === 'idle';
+                    
+                    return (
+                      <div key={agent.id} className="flex items-center gap-2 flex-shrink-0">
+                        {/* Agent indicator */}
+                        <div className={`relative flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-300 ${
+                          isComplete 
+                            ? 'border-success bg-success/20' 
+                            : isActive 
+                            ? 'border-primary bg-primary/20 glow-pulse-active' 
+                            : 'border-border/50 bg-card/50'
+                        }`}>
+                          {isComplete ? (
+                            <CheckCircle2 className="w-4 h-4 text-success" />
+                          ) : isActive ? (
+                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <span className="text-xs font-mono text-muted-foreground">{index + 1}</span>
+                          )}
+                          
+                          {/* Active glow ring */}
+                          {isActive && (
+                            <div className="absolute inset-0 rounded-full border border-primary/50 animate-ping" 
+                                 style={{ animationDuration: '2s' }} />
+                          )}
+                        </div>
+                        
+                        {/* Arrow to next stage */}
+                        {(index < agents.length - 1 || showAggregator || analysisMode === 'supervised') && (
+                          <div className={`flex items-center transition-all ${
+                            isComplete ? 'text-primary' : 'text-border'
+                          }`}>
+                            <div className={`w-6 h-0.5 ${isComplete ? 'bg-primary' : 'bg-border/50'}`} />
+                            <ArrowDown className={`w-3 h-3 -rotate-90 -ml-1 ${
+                              isComplete ? 'text-primary connector-arrow' : ''
+                            }`} />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  
+                  {/* Aggregator indicator */}
+                  {showAggregator && (
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className={`relative flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-300 ${
+                        aggregator.status === 'completed' 
+                          ? 'border-success bg-success/20' 
+                          : aggregator.status === 'running' 
+                          ? 'border-violet-400 bg-violet-500/20 glow-pulse-violet' 
+                          : 'border-violet-500/30 bg-violet-500/10'
+                      }`}>
+                        {aggregator.status === 'completed' ? (
+                          <CheckCircle2 className="w-4 h-4 text-success" />
+                        ) : aggregator.status === 'running' ? (
+                          <div className="w-4 h-4 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Layers className="w-3 h-3 text-violet-400/60" />
+                        )}
+                        
+                        {aggregator.status === 'running' && (
+                          <div className="absolute inset-0 rounded-full border border-violet-400/50 animate-ping" 
+                               style={{ animationDuration: '2s' }} />
+                        )}
+                      </div>
+                      
+                      {/* Arrow to OkBet */}
+                      {analysisMode === 'supervised' && (
+                        <div className={`flex items-center transition-all ${
+                          aggregator.status === 'completed' ? 'text-violet-400' : 'text-border'
+                        }`}>
+                          <div className={`w-6 h-0.5 ${aggregator.status === 'completed' ? 'bg-violet-400' : 'bg-border/50'}`} />
+                          <ArrowDown className={`w-3 h-3 -rotate-90 -ml-1 ${
+                            aggregator.status === 'completed' ? 'text-violet-400 connector-arrow' : ''
+                          }`} />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* OkBet indicator */}
+                  {analysisMode === 'supervised' && (
+                    <div className="flex items-center flex-shrink-0">
+                      <div className={`relative flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-300 ${
+                        isAnalysisComplete && getOkBetLink
+                          ? 'border-amber-400 bg-amber-500/20' 
+                          : 'border-amber-500/30 bg-amber-500/10'
+                      }`}>
+                        {isAnalysisComplete && getOkBetLink ? (
+                          <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                        ) : (
+                          <Image 
+                            src="/okbet.svg" 
+                            alt="OkBet" 
+                            width={14} 
+                            height={14} 
+                            className="w-3.5 h-3.5 opacity-60"
+                          />
+                        )}
+                        
+                        {isAnalysisComplete && getOkBetLink && (
+                          <div className="absolute inset-0 rounded-full border border-amber-400/50 animate-ping" 
+                               style={{ animationDuration: '2s' }} />
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Stage labels */}
+                <div className="flex items-center justify-between mt-2 text-[9px] font-mono text-muted-foreground">
+                  <span className="flex-shrink-0">Agents ({agents.filter(a => a.status === 'completed').length}/{agents.length})</span>
+                  {showAggregator && <span className="flex-shrink-0">Aggregator</span>}
+                  {analysisMode === 'supervised' && <span className="flex-shrink-0">OkBet</span>}
+                </div>
+              </div>
+            )}
+
             {/* Agent Boxes */}
-            <div className="space-y-2">
+            <div className="space-y-0">
               {agents.map((agent, index) => {
                 const isExpanded = expandedAgents.has(agent.id);
                 const hasResult = agent.status === 'completed' && agent.result;
                 // Higher index agents get lower z-index so dropdowns from earlier agents appear on top
                 const agentZIndex = 100 - index;
+                const isCurrentlyRunning = agent.status === 'running';
+                const isCompleted = agent.status === 'completed';
+                const previousCompleted = index > 0 && agents[index - 1].status === 'completed';
                 
                 return (
-                  <div 
-                    key={agent.id}
-                    className={`relative border rounded-lg bg-card/60 backdrop-blur-sm transition-all ${
-                      agent.status === 'running' 
-                        ? 'border-primary/50 border-glow' 
-                        : agent.status === 'completed'
-                        ? 'border-success/50'
-                        : agent.status === 'error'
-                        ? 'border-destructive/50'
-                        : 'border-border'
-                    }`}
-                    style={{ zIndex: agentZIndex }}
-                  >
-                    <div className="flex items-center justify-between px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        {renderAgentStatus(agent.status)}
-                        <span className="font-display text-sm text-foreground">
-                          Agent {index + 1}
-                        </span>
-                        {agent.status === 'error' && agent.error && (
-                          <span className="text-xs text-destructive truncate max-w-[200px]">
-                            {agent.error}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {/* Expand Analysis Button - Only show when completed */}
-                        {hasResult && (
-                          <button
-                            onClick={() => toggleAgentExpanded(agent.id)}
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-success/10 border border-success/30 text-success text-xs font-display hover:bg-success/20 hover:border-success/50 transition-all"
-                          >
-                            <FileText className="w-3 h-3" />
-                            <span className="hidden sm:inline">Agent&apos;s Analysis</span>
-                            <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                          </button>
-                        )}
-                        {renderToolsDropdown(
-                          agent.id,
-                          agent.tools,
-                          isRunning,
-                          isOpenAIModel(agent.model),
-                          agentZIndex + 51
-                        )}
-                        {renderModelDropdown(
-                          agent.id,
-                          agent.model,
-                          (model) => updateAgentModel(agent.id, model),
-                          isRunning,
-                          agentZIndex + 50,
-                          // Only restrict to Grok when Grok-only tools are selected
-                          agent.tools?.some(t => t === 'x_search' || t === 'web_search') ?? false
-                        )}
-                        {agents.length > 1 && (
-                          <button
-                            onClick={() => removeAgent(agent.id)}
-                            disabled={isRunning}
-                            className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Expandable Analysis Content */}
-                    {hasResult && isExpanded && (
-                      <div className="px-4 pb-4 border-t border-border/50 mt-2 pt-4">
-                        <AnalysisOutput
-                          analysis={agent.result!}
-                          timestamp={new Date()}
-                          polyfactualResearch={agent.polyfactualResearch}
-                        />
-                      </div>
+                  <div key={agent.id}>
+                    {/* Connector from previous agent */}
+                    {index > 0 && (
+                      renderWorkflowConnector(
+                        'agent',
+                        isCurrentlyRunning || previousCompleted,
+                        previousCompleted
+                      )
                     )}
+                    
+                    <div 
+                      className={`relative border rounded-lg bg-card/60 backdrop-blur-sm transition-all duration-300 ${
+                        isCurrentlyRunning 
+                          ? 'border-primary/70 glow-pulse-active agent-card-active' 
+                          : isCompleted
+                          ? 'border-success/50 completion-burst'
+                          : agent.status === 'error'
+                          ? 'border-destructive/50'
+                          : 'border-border'
+                      }`}
+                      style={{ 
+                        zIndex: agentZIndex,
+                        animationDelay: isCompleted ? `${index * 100}ms` : '0ms'
+                      }}
+                    >
+                      {/* Processing indicator bar */}
+                      {isCurrentlyRunning && (
+                        <div className="absolute top-0 left-0 right-0 h-0.5 overflow-hidden rounded-t-lg">
+                          <div className="h-full gradient-border-animate" />
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {renderAgentStatus(agent.status)}
+                          <span className={`font-display text-sm transition-colors ${
+                            isCurrentlyRunning ? 'text-primary' : 'text-foreground'
+                          }`}>
+                            Agent {index + 1}
+                            {isCurrentlyRunning && (
+                              <span className="text-primary/70 text-xs ml-2 typing-dots">analyzing</span>
+                            )}
+                          </span>
+                          {agent.status === 'error' && agent.error && (
+                            <span className="text-xs text-destructive truncate max-w-[200px]">
+                              {agent.error}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {/* Expand Analysis Button - Only show when completed */}
+                          {hasResult && (
+                            <button
+                              onClick={() => toggleAgentExpanded(agent.id)}
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-success/10 border border-success/30 text-success text-xs font-display hover:bg-success/20 hover:border-success/50 transition-all stagger-fade-in"
+                            >
+                              <FileText className="w-3 h-3" />
+                              <span className="hidden sm:inline">Agent&apos;s Analysis</span>
+                              <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                            </button>
+                          )}
+                          {renderToolsDropdown(
+                            agent.id,
+                            agent.tools,
+                            isRunning,
+                            isOpenAIModel(agent.model),
+                            agentZIndex + 51
+                          )}
+                          {renderModelDropdown(
+                            agent.id,
+                            agent.model,
+                            (model) => updateAgentModel(agent.id, model),
+                            isRunning,
+                            agentZIndex + 50,
+                            // Only restrict to Grok when Grok-only tools are selected
+                            agent.tools?.some(t => t === 'x_search' || t === 'web_search') ?? false
+                          )}
+                          {agents.length > 1 && (
+                            <button
+                              onClick={() => removeAgent(agent.id)}
+                              disabled={isRunning}
+                              className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Expandable Analysis Content */}
+                      {hasResult && isExpanded && (
+                        <div className="px-4 pb-4 border-t border-border/50 mt-2 pt-4 stagger-fade-in">
+                          <AnalysisOutput
+                            analysis={agent.result!}
+                            timestamp={new Date()}
+                            polyfactualResearch={agent.polyfactualResearch}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
 
               {/* Aggregator Box - Only shows when multiple agents */}
               {showAggregator && (
-                <div 
-                  className={`relative border rounded-lg bg-gradient-to-r from-violet-500/5 to-cyan-500/5 backdrop-blur-sm transition-all ${
-                    aggregator.status === 'running' 
-                      ? 'border-violet-500/50 shadow-lg shadow-violet-500/10' 
-                      : aggregator.status === 'completed'
-                      ? 'border-success/50'
-                      : aggregator.status === 'error'
-                      ? 'border-destructive/50'
-                      : 'border-violet-500/30'
-                  }`}
-                  style={{ zIndex: 10 }}
-                >
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {aggregator.status === 'running' ? (
-                        <Loader2 className="w-4 h-4 text-violet-400 animate-spin" />
-                      ) : aggregator.status === 'completed' ? (
-                        <CheckCircle2 className="w-4 h-4 text-success" />
-                      ) : aggregator.status === 'error' ? (
-                        <XCircle className="w-4 h-4 text-destructive" />
-                      ) : (
-                        <Layers className="w-4 h-4 text-violet-400" />
-                      )}
-                      <div className="flex items-center gap-2">
-                        <span className="font-display text-sm text-violet-400">
-                          Analysis Aggregator
-                        </span>
-                        <Sparkles className="w-3 h-3 text-violet-400/60" />
+                <>
+                  {/* Connector to aggregator */}
+                  {renderWorkflowConnector(
+                    'aggregator',
+                    aggregator.status === 'running' || agents.every(a => a.status === 'completed'),
+                    agents.every(a => a.status === 'completed')
+                  )}
+                  
+                  <div 
+                    className={`relative border rounded-lg bg-gradient-to-r from-violet-500/5 via-purple-500/5 to-cyan-500/5 backdrop-blur-sm transition-all duration-300 ${
+                      aggregator.status === 'running' 
+                        ? 'border-violet-500/70 glow-pulse-violet agent-card-active overflow-hidden' 
+                        : aggregator.status === 'completed'
+                        ? 'border-success/50 completion-burst-violet'
+                        : aggregator.status === 'error'
+                        ? 'border-destructive/50'
+                        : 'border-violet-500/30'
+                    }`}
+                    style={{ zIndex: openDropdown === 'aggregator' ? 1000 : 10 }}
+                  >
+                    {/* Processing indicator bar */}
+                    {aggregator.status === 'running' && (
+                      <div className="absolute top-0 left-0 right-0 h-0.5 overflow-hidden">
+                        <div className="h-full w-full bg-gradient-to-r from-violet-500 via-purple-400 to-cyan-400 animate-pulse" 
+                             style={{ animation: 'gradient-shift 2s linear infinite' }} />
                       </div>
-                      {aggregator.status === 'error' && aggregator.error && (
-                        <span className="text-xs text-destructive truncate max-w-[200px]">
-                          {aggregator.error}
-                        </span>
-                      )}
+                    )}
+                    
+                    {/* Background pattern when running */}
+                    {aggregator.status === 'running' && (
+                      <div className="absolute inset-0 neural-dots opacity-30 pointer-events-none" />
+                    )}
+                    
+                    <div className="flex items-center justify-between px-4 py-3 relative">
+                      <div className="flex items-center gap-3">
+                        {aggregator.status === 'running' ? (
+                          <div className="relative">
+                            <Layers className="w-4 h-4 text-violet-400" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="w-6 h-6 border border-violet-400/50 rounded-full processing-ring" 
+                                   style={{ borderTopColor: 'transparent', borderRightColor: 'transparent' }} />
+                            </div>
+                            {/* Orbiting particles */}
+                            <div className="absolute -inset-2 orbit-particles" />
+                          </div>
+                        ) : aggregator.status === 'completed' ? (
+                          <CheckCircle2 className="w-4 h-4 text-success success-check" />
+                        ) : aggregator.status === 'error' ? (
+                          <XCircle className="w-4 h-4 text-destructive" />
+                        ) : (
+                          <Layers className="w-4 h-4 text-violet-400/60" />
+                        )}
+                        <div className="flex items-center gap-2">
+                          <span className={`font-display text-sm transition-colors ${
+                            aggregator.status === 'running' ? 'text-violet-300' : 'text-violet-400'
+                          }`}>
+                            Analysis Aggregator
+                            {aggregator.status === 'running' && (
+                              <span className="text-violet-400/70 text-xs ml-2 typing-dots">synthesizing</span>
+                            )}
+                          </span>
+                          <Sparkles className={`w-3 h-3 transition-all ${
+                            aggregator.status === 'running' 
+                              ? 'text-violet-400 animate-pulse' 
+                              : 'text-violet-400/60'
+                          }`} />
+                        </div>
+                        {aggregator.status === 'error' && aggregator.error && (
+                          <span className="text-xs text-destructive truncate max-w-[200px]">
+                            {aggregator.error}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {/* Expand Aggregated Analysis Button */}
+                        {aggregator.status === 'completed' && aggregator.result && (
+                          <button
+                            onClick={() => setExpandedAggregator(!expandedAggregator)}
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-display hover:bg-violet-500/20 hover:border-violet-500/50 transition-all stagger-fade-in"
+                          >
+                            <FileText className="w-3 h-3" />
+                            <span className="hidden sm:inline">Aggregated Analysis</span>
+                            <ChevronDown className={`w-3 h-3 transition-transform ${expandedAggregator ? 'rotate-180' : ''}`} />
+                          </button>
+                        )}
+                        {renderModelDropdown(
+                          'aggregator',
+                          aggregator.model,
+                          updateAggregatorModel,
+                          isRunning,
+                          60
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {/* Expand Aggregated Analysis Button */}
-                      {aggregator.status === 'completed' && aggregator.result && (
-                        <button
-                          onClick={() => setExpandedAggregator(!expandedAggregator)}
-                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-display hover:bg-violet-500/20 hover:border-violet-500/50 transition-all"
-                        >
-                          <FileText className="w-3 h-3" />
-                          <span className="hidden sm:inline">Aggregated Analysis</span>
-                          <ChevronDown className={`w-3 h-3 transition-transform ${expandedAggregator ? 'rotate-180' : ''}`} />
-                        </button>
-                      )}
-                      {renderModelDropdown(
-                        'aggregator',
-                        aggregator.model,
-                        updateAggregatorModel,
-                        isRunning,
-                        60
-                      )}
-                    </div>
+                    
+                    {aggregator.status === 'idle' && (
+                      <div className="px-4 pb-3">
+                        <p className="text-[10px] text-muted-foreground">
+                          Synthesizes all agent analyses into a consolidated assessment
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Expandable Aggregated Analysis Content */}
+                    {aggregator.status === 'completed' && aggregator.result && expandedAggregator && (
+                      <div className="px-4 pb-4 border-t border-violet-500/30 mt-2 pt-4 stagger-fade-in">
+                        <AggregatedAnalysisOutput
+                          analysis={aggregator.result}
+                          timestamp={new Date()}
+                          agentsCount={agents.filter(a => a.status === 'completed').length}
+                        />
+                      </div>
+                    )}
                   </div>
-                  
-                  {aggregator.status === 'idle' && (
-                    <div className="px-4 pb-3">
-                      <p className="text-[10px] text-muted-foreground">
-                        Synthesizes all agent analyses into a consolidated assessment
-                      </p>
-                    </div>
-                  )}
-                  
-                  {/* Expandable Aggregated Analysis Content */}
-                  {aggregator.status === 'completed' && aggregator.result && expandedAggregator && (
-                    <div className="px-4 pb-4 border-t border-violet-500/30 mt-2 pt-4">
-                      <AggregatedAnalysisOutput
-                        analysis={aggregator.result}
-                        timestamp={new Date()}
-                        agentsCount={agents.filter(a => a.status === 'completed').length}
-                      />
-                    </div>
-                  )}
-                </div>
+                </>
               )}
 
               {/* OkBet Box - Always shows in supervised mode */}
               {analysisMode === 'supervised' && (
-                <div 
-                  className="relative border rounded-lg bg-gradient-to-r from-amber-500/5 to-orange-500/5 backdrop-blur-sm border-amber-500/30 transition-all"
-                  style={{ zIndex: 5 }}
-                >
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <Image 
-                        src="/okbet.svg" 
-                        alt="OkBet" 
-                        width={20} 
-                        height={20} 
-                        className="w-5 h-5"
-                      />
-                      <span className="font-display text-sm text-amber-400">
-                        OkBet
-                      </span>
+                <>
+                  {/* Connector to OkBet */}
+                  {renderWorkflowConnector(
+                    'okbet',
+                    isAnalysisComplete,
+                    isAnalysisComplete
+                  )}
+                  
+                  <div 
+                    className={`relative border rounded-lg bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-yellow-500/5 backdrop-blur-sm transition-all duration-500 overflow-hidden ${
+                      isAnalysisComplete && getOkBetLink
+                        ? 'border-amber-500/70 completion-burst-amber'
+                        : isRunning
+                        ? 'border-amber-500/20 shimmer'
+                        : 'border-amber-500/30'
+                    }`}
+                    style={{ zIndex: 5 }}
+                  >
+                    {/* Celebratory effect when link is ready */}
+                    {isAnalysisComplete && getOkBetLink && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/10 pointer-events-none" 
+                           style={{ animation: 'shimmer 3s infinite' }} />
+                    )}
+                    
+                    <div className="flex items-center justify-between px-4 py-3 relative">
+                      <div className="flex items-center gap-3">
+                        <div className={`relative ${isAnalysisComplete && getOkBetLink ? 'animate-bounce' : ''}`}
+                             style={{ animationDuration: '2s' }}>
+                          <Image 
+                            src="/okbet.svg" 
+                            alt="OkBet" 
+                            width={20} 
+                            height={20} 
+                            className={`w-5 h-5 transition-all ${
+                              isAnalysisComplete && getOkBetLink ? 'drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]' : ''
+                            }`}
+                          />
+                        </div>
+                        <span className={`font-display text-sm transition-colors ${
+                          isAnalysisComplete && getOkBetLink ? 'text-amber-300' : 'text-amber-400'
+                        }`}>
+                          OkBet
+                          {isRunning && (
+                            <span className="text-amber-400/50 text-xs ml-2">waiting</span>
+                          )}
+                          {isAnalysisComplete && getOkBetLink && (
+                            <span className="text-amber-300/70 text-xs ml-2">ready!</span>
+                          )}
+                        </span>
+                      </div>
+                      
+                      {/* Ready indicator */}
+                      {isAnalysisComplete && getOkBetLink && (
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-500/20 border border-amber-500/40">
+                          <div className="w-1.5 h-1.5 rounded-full bg-amber-400 pulse-live" />
+                          <span className="text-[10px] font-display text-amber-400">LINK READY</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="px-4 pb-4 relative">
+                      {isAnalysisComplete ? (
+                        getOkBetLink ? (
+                          <div className="stagger-fade-in">
+                            <p className="text-xs text-muted-foreground mb-3">
+                              You can place bets through OkBet with the one-click link:
+                            </p>
+                            <a
+                              href={getOkBetLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-amber-500/15 border border-amber-500/50 text-amber-300 text-sm font-mono hover:bg-amber-500/25 hover:border-amber-400 hover:text-amber-200 transition-all group shadow-lg shadow-amber-500/10"
+                            >
+                              <ExternalLink className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                              <span className="truncate">{getOkBetLink}</span>
+                              <ArrowDown className="w-3 h-3 ml-auto rotate-[-90deg] group-hover:translate-x-1 transition-transform" />
+                            </a>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">
+                            OkBet link unavailable for this event.
+                          </p>
+                        )
+                      ) : (
+                        <div className={`text-xs text-muted-foreground ${isRunning ? 'shimmer rounded px-2 py-1' : ''}`}>
+                          {isRunning ? (
+                            <span className="typing-dots">Generating link</span>
+                          ) : (
+                            'The one-click OkBet links will appear here.'
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  
-                  <div className="px-4 pb-4">
-                    {isAnalysisComplete ? (
-                      getOkBetLink ? (
-                        <>
-                          <p className="text-xs text-muted-foreground mb-3">
-                            You can place bets through OkBet with the one-click link:
-                          </p>
-                          <a
-                            href={getOkBetLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-3 py-2 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-mono hover:bg-amber-500/20 hover:border-amber-500/50 transition-all group"
-                          >
-                            <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                            <span className="truncate">{getOkBetLink}</span>
-                          </a>
-                        </>
-                      ) : (
-                        <p className="text-xs text-muted-foreground">
-                          OkBet link unavailable for this event.
+                </>
+              )}
+              
+              {/* Completion Summary - Shows when analysis is complete */}
+              {isAnalysisComplete && !isRunning && (
+                <div className="mt-4 stagger-fade-in">
+                  <div className="relative p-4 rounded-lg bg-gradient-to-r from-success/5 via-primary/5 to-success/5 border border-success/30 overflow-hidden">
+                    {/* Celebratory shimmer */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-success/0 via-success/10 to-success/0 pointer-events-none"
+                         style={{ animation: 'shimmer 3s infinite' }} />
+                    
+                    <div className="relative flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success/20 border border-success/30">
+                        <CheckCircle2 className="w-4 h-4 text-success success-check" />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-display text-sm text-success mb-1">Analysis Complete</h4>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          {agents.filter(a => a.status === 'completed').length} agent{agents.filter(a => a.status === 'completed').length > 1 ? 's' : ''} analyzed the market
+                          {showAggregator && aggregator.status === 'completed' && ' with consolidated insights'}
                         </p>
-                      )
-                    ) : (
-                      <p className="text-xs text-muted-foreground">
-                        The one-click OkBet links will appear here.
-                      </p>
-                    )}
+                        
+                        {/* Stats */}
+                        <div className="flex flex-wrap gap-3">
+                          {agents.filter(a => a.status === 'completed' && a.result).map((agent, idx) => (
+                            <div key={agent.id} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-card/60 border border-border/50 text-xs">
+                              <Bot className="w-3 h-3 text-primary" />
+                              <span className="text-muted-foreground">Agent {idx + 1}:</span>
+                              <span className={`font-mono ${
+                                agent.result?.recommendedAction?.includes('YES') 
+                                  ? 'text-success' 
+                                  : agent.result?.recommendedAction?.includes('NO')
+                                  ? 'text-destructive'
+                                  : 'text-warning'
+                              }`}>
+                                {agent.result?.recommendedAction}
+                              </span>
+                            </div>
+                          ))}
+                          
+                          {showAggregator && aggregator.status === 'completed' && aggregator.result && (
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-violet-500/10 border border-violet-500/30 text-xs">
+                              <Layers className="w-3 h-3 text-violet-400" />
+                              <span className="text-violet-400/80">Final:</span>
+                              <span className={`font-mono font-semibold ${
+                                aggregator.result.recommendedAction?.includes('YES') 
+                                  ? 'text-success' 
+                                  : aggregator.result.recommendedAction?.includes('NO')
+                                  ? 'text-destructive'
+                                  : 'text-warning'
+                              }`}>
+                                {aggregator.result.recommendedAction}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1022,19 +1412,42 @@ const AgenticMarketAnalysis = () => {
           <button
             onClick={runAgents}
             disabled={isRunning || !url.trim() || agents.some(a => !a.model) || (agents.length > 1 && !aggregator.model)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary/20 border border-primary/50 text-primary font-display text-sm hover:bg-primary/30 hover:border-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed glow-primary"
+            className={`relative w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-lg border font-display text-sm transition-all overflow-hidden ${
+              isRunning 
+                ? 'bg-primary/10 border-primary/70 text-primary glow-pulse-active cursor-wait' 
+                : 'bg-primary/20 border-primary/50 text-primary hover:bg-primary/30 hover:border-primary glow-primary disabled:opacity-50 disabled:cursor-not-allowed'
+            }`}
           >
-            {isRunning ? (
+            {/* Animated background when running */}
+            {isRunning && (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Running Agents...
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4" />
-                Run Agents
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0"
+                     style={{ animation: 'shimmer 2s infinite' }} />
+                <div className="absolute top-0 left-0 right-0 h-1 overflow-hidden">
+                  <div className="h-full gradient-border-animate" />
+                </div>
               </>
             )}
+            
+            <div className="relative flex items-center gap-2">
+              {isRunning ? (
+                <>
+                  <div className="relative">
+                    <Cpu className="w-4 h-4" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-6 h-6 border border-primary/50 rounded-full processing-ring" 
+                           style={{ borderTopColor: 'transparent', borderRightColor: 'transparent' }} />
+                    </div>
+                  </div>
+                  <span className="typing-dots">Running Agents</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  Run Agents
+                </>
+              )}
+            </div>
           </button>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { AnalysisAggregatorRequest, AnalysisAggregatorResponse } from "@/types/agentic";
 
 /**
- * Server-side API route to proxy requests to the analysis-aggregator-agent Edge Function.
+ * Server-side API route to proxy requests to the bookmaker-agent Edge Function.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const edgeFunctionUrl = process.env.SUPABASE_EDGE_FUNCTION_ANALYSIS_AGGREGATOR_AGENT 
-      || `${supabaseUrl}/functions/v1/analysis-aggregator-agent`;
+    const edgeFunctionUrl = process.env.SUPABASE_EDGE_FUNCTION_BOOKMAKER_AGENT 
+      || `${supabaseUrl}/functions/v1/bookmaker-agent`;
     
     const response = await fetch(edgeFunctionUrl, {
       method: "POST",
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error("Error in analysis-aggregator-agent API route:", error);
+    console.error("Error in bookmaker-agent API route:", error);
     return NextResponse.json(
       {
         success: false,

@@ -417,7 +417,7 @@ const AgenticMarketAnalysis = () => {
         setAggregator(prev => ({ ...prev, status: 'running' }));
 
         try {
-          const aggregatorResponse = await fetch("/api/analysis-aggregator-agent", {
+          const aggregatorResponse = await fetch("/api/bookmaker-agent", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

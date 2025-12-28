@@ -1,11 +1,11 @@
 /**
- * Supabase Edge Function: analysis-aggregator-agent
+ * Supabase Edge Function: bookmaker-agent
  * 
  * Aggregates multiple agent analyses into a consolidated assessment.
  * Acts as a "judge" that weighs different agent opinions.
  */
 
-import { aggregateAnalysesPrompt } from "../_shared/ai/prompts/aggregateAnalyses.ts";
+import { bookmakerAnalysisPrompt } from "../_shared/ai/prompts/bookmakerAnalysis.ts";
 import { callGrokResponses } from "../_shared/ai/callGrok.ts";
 import { callOpenAIResponses } from "../_shared/ai/callOpenAI.ts";
 import type { GrokMessage, GrokOutputText, OpenAIMessage, OpenAIOutputText } from "../_shared/ai/types.ts";
@@ -109,7 +109,7 @@ Deno.serve(async (req: Request) => {
       analysis: a.analysis,
     }));
     
-    const { systemPrompt, userPrompt } = aggregateAnalysesPrompt(agentAnalyses, eventIdentifier, pmType);
+    const { systemPrompt, userPrompt } = bookmakerAnalysisPrompt(agentAnalyses, eventIdentifier, pmType);
 
     let aiResponseModel: string;
     let aiTokensUsed: number | undefined;

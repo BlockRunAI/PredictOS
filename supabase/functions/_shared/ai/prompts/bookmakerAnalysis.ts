@@ -1,5 +1,5 @@
 /**
- * Generates prompts for aggregating multiple agent analyses into a consolidated view.
+ * Generates prompts for the bookmaker agent to aggregate multiple agent analyses into a consolidated view.
  */
 
 import type { MarketAnalysis } from "../../../event-analysis-agent/types.ts";
@@ -10,7 +10,7 @@ export interface AgentAnalysis {
   analysis: MarketAnalysis;
 }
 
-export function aggregateAnalysesPrompt(
+export function bookmakerAnalysisPrompt(
   analyses: AgentAnalysis[],
   eventIdentifier: string,
   pmType: string

@@ -1,5 +1,5 @@
 /**
- * Type definitions for analysis-aggregator-agent edge function
+ * Type definitions for bookmaker-agent edge function
  */
 
 /** Prediction market type */
@@ -76,7 +76,7 @@ export interface AggregatedAnalysis extends MarketAnalysis {
 }
 
 /**
- * Request body for the analysis-aggregator-agent endpoint
+ * Request body for the bookmaker-agent endpoint
  */
 export interface AnalysisAggregatorRequest {
   /** List of all agent analyses to aggregate */
@@ -90,7 +90,7 @@ export interface AnalysisAggregatorRequest {
 }
 
 /**
- * Response from the analysis-aggregator-agent endpoint
+ * Response from the bookmaker-agent endpoint
  */
 export interface AnalysisAggregatorResponse {
   /** Whether the request was successful */

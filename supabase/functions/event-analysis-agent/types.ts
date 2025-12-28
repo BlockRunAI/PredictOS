@@ -24,6 +24,8 @@ export interface EventAnalysisAgentRequest {
   question?: string;
   /** Optional tools for Grok models (X Search, Web Search) */
   tools?: GrokTool[];
+  /** Optional user command to prioritize in the analysis */
+  userCommand?: string;
 }
 
 /**

@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
         model: body.model,
         question: body.question,
         tools: body.tools,
+        userCommand: body.userCommand,
       }),
     });
 

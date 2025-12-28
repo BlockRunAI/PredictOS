@@ -10,7 +10,8 @@ export function analyzeEventMarketsPrompt(
     eventIdentifier: string,
     question: string,
     pmType: string,
-    tools?: ToolType[]
+    tools?: ToolType[],
+    userCommand?: string
 ): {
     systemPrompt: string;
     userPrompt: string;
@@ -29,7 +30,9 @@ export function analyzeEventMarketsPrompt(
     const systemPrompt = `You are a financial analyst expert in the field of prediction markets (posted on ${pmType}) that understands the latest news, events, and market trends.
 Your expertise lies in deeply analyzing prediction markets for a specific event, identifying if there's alpha (mispricing) opportunity, and providing a clear recommendation on which side (YES or NO) is more likely to win based on your analysis.
 You always provide a short analysisSummary of your findings, less than 270 characters, that is very conversational and understandable by a non-expert who just wants to understand which side it might make more sense to buy into.
-${toolInstructions}
+${toolInstructions}${userCommand ? `
+### VERY IMPORTANT: The user has provided specific commands that you MUST prioritize over everything else:
+${userCommand}` : ''}
 Your output is ALWAYS in JSON format and you are VERY STRICT about it. You must return valid JSON that matches the exact schema specified.`;
 
     const userPrompt = `# Task: Deep Analysis of an Event's Prediction Markets
@@ -110,7 +113,10 @@ Return your analysis in JSON format with the following fields. Focus on the SING
 - The analysisSummary should be conversational and to-the-point, no hype or emojis${hasXSearch ? `
 - IMPORTANT: Include 2-4 relevant X (Twitter) post URLs in xSources that back your analysis - these should be real posts you found via search` : ''}${hasWebSearch ? `
 - IMPORTANT: Include 2-4 relevant web URLs (news articles, reports) in webSources that back your analysis - these should be real resources you found via search` : ''}
-
+${userCommand ? `
+### VERY IMPORTANT:Below are the user commands - Make sure to prioritize their ask over everything else
+${userCommand}
+` : ''}
 Now analyze these markets and provide your assessment. Return your response in the exact JSON format specified above.`;
 
     return {

@@ -42,6 +42,11 @@ const AnalysisOutput = ({ analysis, timestamp, marketUrl, polyfactualResearch }:
       { type: "answer", content: analysis.questionAnswer },
       { type: "divider", content: "─".repeat(50) },
     ] : []),
+    ...(analysis.reasoning ? [
+      { type: "section", content: "REASONING:" },
+      { type: "reasoning", content: analysis.reasoning },
+      { type: "divider", content: "─".repeat(50) },
+    ] : []),
     { type: "section", content: "KEY FACTORS:" },
     ...analysis.keyFactors.map(f => ({ type: "factor", content: `• ${f}` })),
     { type: "divider", content: "─".repeat(50) },
@@ -134,6 +139,8 @@ const AnalysisOutput = ({ analysis, timestamp, marketUrl, polyfactualResearch }:
         return `${getVerdictColor()} font-bold text-xl`;
       case "answer":
         return "text-secondary-foreground pl-2 whitespace-pre-wrap";
+      case "reasoning":
+        return "text-secondary-foreground pl-2 whitespace-pre-wrap leading-relaxed";
       case "factor":
         return "text-secondary-foreground pl-2";
       case "risk":

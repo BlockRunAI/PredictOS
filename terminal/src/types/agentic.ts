@@ -44,6 +44,8 @@ export interface EventAnalysisAgentRequest {
   model: string;
   question?: string;
   tools?: ('x_search' | 'web_search')[];
+  /** Optional user command to prioritize in the analysis */
+  userCommand?: string;
 }
 
 export interface MarketAnalysis {
@@ -148,6 +150,8 @@ export interface AgentConfig {
   id: string;
   model: string;
   tools?: AgentTool[];
+  /** Optional user command to prioritize in the analysis */
+  userCommand?: string;
   status: 'idle' | 'running' | 'completed' | 'error';
   result?: MarketAnalysis;
   polyfactualResearch?: PolyfactualResearchResult;

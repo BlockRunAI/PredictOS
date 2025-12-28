@@ -119,7 +119,7 @@ const AgenticMarketAnalysis = () => {
   
   // Agent configurations
   const [agents, setAgents] = useState<AgentConfig[]>([
-    { id: generateAgentId(), model: "", tools: undefined, status: 'idle' }
+    { id: generateAgentId(), model: "", tools: undefined, userCommand: "", status: 'idle' }
   ]);
   
   // Aggregator configuration
@@ -192,8 +192,14 @@ const AgenticMarketAnalysis = () => {
   const addAgent = () => {
     setAgents(prev => [
       ...prev,
-      { id: generateAgentId(), model: "", tools: undefined, status: 'idle' }
+      { id: generateAgentId(), model: "", tools: undefined, userCommand: "", status: 'idle' }
     ]);
+  };
+
+  const updateAgentCommand = (agentId: string, command: string) => {
+    setAgents(prev => prev.map(a => 
+      a.id === agentId ? { ...a, userCommand: command } : a
+    ));
   };
 
   const removeAgent = (agentId: string) => {
@@ -342,6 +348,7 @@ const AgenticMarketAnalysis = () => {
               pmType: eventsData.pmType,
               model: agent.model,
               tools: grokTools && grokTools.length > 0 ? grokTools : undefined,
+              userCommand: agent.userCommand?.trim() || undefined,
             }),
           });
 
@@ -1129,6 +1136,23 @@ const AgenticMarketAnalysis = () => {
                           )}
                         </div>
                       </div>
+                      
+                      {/* Command Input Box */}
+                      {!hasResult && (
+                        <div className="px-4 pb-3">
+                          <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary/30 border border-border/50 focus-within:border-primary/50 focus-within:bg-secondary/50 transition-all">
+                            <span className="text-primary/60 font-mono text-xs">{">"}</span>
+                            <input
+                              type="text"
+                              value={agent.userCommand || ""}
+                              onChange={(e) => updateAgentCommand(agent.id, e.target.value)}
+                              placeholder="Commands (Optional)"
+                              disabled={isRunning}
+                              className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground/40 font-mono text-xs disabled:opacity-50"
+                            />
+                          </div>
+                        </div>
+                      )}
                       
                       {/* Expandable Analysis Content */}
                       {hasResult && isExpanded && (

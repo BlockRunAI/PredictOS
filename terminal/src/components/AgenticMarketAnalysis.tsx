@@ -1062,7 +1062,7 @@ const AgenticMarketAnalysis = () => {
                           <span className={`font-display text-sm transition-colors ${
                             isCurrentlyRunning ? 'text-primary' : 'text-foreground'
                           }`}>
-                            Agent {index + 1}
+                            Predict Agent {index + 1}
                             {isCurrentlyRunning && (
                               <span className="text-primary/70 text-xs ml-2 typing-dots">analyzing</span>
                             )}
@@ -1186,7 +1186,7 @@ const AgenticMarketAnalysis = () => {
                           <span className={`font-display text-sm transition-colors ${
                             aggregator.status === 'running' ? 'text-violet-300' : 'text-violet-400'
                           }`}>
-                            Analysis Aggregator
+                            Predict Bookmaker Agent
                             {aggregator.status === 'running' && (
                               <span className="text-violet-400/70 text-xs ml-2 typing-dots">synthesizing</span>
                             )}
@@ -1371,7 +1371,7 @@ const AgenticMarketAnalysis = () => {
                           {agents.filter(a => a.status === 'completed' && a.result).map((agent, idx) => (
                             <div key={agent.id} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-card/60 border border-border/50 text-xs">
                               <Bot className="w-3 h-3 text-primary" />
-                              <span className="text-muted-foreground">Agent {idx + 1}:</span>
+                              <span className="text-muted-foreground">Predict Agent {idx + 1}:</span>
                               <span className={`font-mono ${
                                 agent.result?.recommendedAction?.includes('YES') 
                                   ? 'text-success' 

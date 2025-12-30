@@ -87,8 +87,8 @@ interface ToolOption {
 const TOOL_OPTIONS: ToolOption[] = [
   { value: "x_search", label: "X Search", grokOnly: true },
   { value: "web_search", label: "Web Search", grokOnly: true },
+  { value: "x402", label: "PayAI sellers (x402)", grokOnly: false },
   { value: "polyfactual", label: "PolyFactual Research", grokOnly: false },
-  { value: "x402", label: "PayAI sellers", grokOnly: false },
 ];
 
 /**

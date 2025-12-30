@@ -153,6 +153,7 @@ Deno.serve(async (req: Request) => {
         const network = callRequest.network || NETWORKS.SOLANA_MAINNET;
 
         // TEMP: Hardcoded seller URL for testing -- for testing purposes only
+        // since a lot of the sellers don't follow the x402 protocol, but biznews does
         // const testSellerUrl = "https://biznews.x402.bot/news";
         // console.log(`[x402-seller] Using hardcoded test seller: ${testSellerUrl} (original: ${callRequest.resourceUrl})`);
 

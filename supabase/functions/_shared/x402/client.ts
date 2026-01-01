@@ -138,7 +138,8 @@ function createNonce(): `0x${string}` {
 async function createEvmPaymentHeader(
   privateKey: string,
   paymentRequirements: X402PaymentRequirements,
-  x402Version: number
+  x402Version: number,
+  resource?: ResourceInfo
 ): Promise<string> {
   console.log("[x402] Creating EVM payment header for Base mainnet...");
   
@@ -157,7 +158,7 @@ async function createEvmPaymentHeader(
   const authorization = {
     from: fromAddress,
     to: paymentRequirements.payTo,
-    value: paymentRequirements.maxAmountRequired,
+    value: paymentRequirements.amount || paymentRequirements.maxAmountRequired || "0",
     validAfter: validAfter.toString(),
     validBefore: validBefore.toString(),
     nonce,
@@ -185,7 +186,7 @@ async function createEvmPaymentHeader(
     {
       from: fromAddress,
       to: paymentRequirements.payTo,
-      value: BigInt(paymentRequirements.maxAmountRequired),
+      value: BigInt(paymentRequirements.amount || paymentRequirements.maxAmountRequired || "0"),
       validAfter: BigInt(validAfter),
       validBefore: BigInt(validBefore),
       nonce,
@@ -194,21 +195,46 @@ async function createEvmPaymentHeader(
   
   console.log("[x402] Signature created");
   
-  // Create payment payload
+  // Create payment payload (x402 v2 format)
+  // CRITICAL: v2 requires 'accepted' field with full PaymentRequirements
+  // and 'resource' field with ResourceInfo
   const paymentPayload = {
     x402Version,
-    scheme: paymentRequirements.scheme || "exact",
-    network: paymentRequirements.network,
+    resource: resource || {
+      url: "",
+      description: "",
+      mimeType: "application/json",
+    },
+    accepted: {
+      scheme: paymentRequirements.scheme || "exact",
+      network: paymentRequirements.network,
+      asset: paymentRequirements.asset,
+      amount: paymentRequirements.amount || paymentRequirements.maxAmountRequired || "0",
+      payTo: paymentRequirements.payTo,
+      maxTimeoutSeconds: paymentRequirements.maxTimeoutSeconds || 60,
+      extra: paymentRequirements.extra || {},
+    },
     payload: {
       authorization,
       signature,
     },
   };
   
+  console.log("[x402] Payment payload (v2 format):", JSON.stringify(paymentPayload, null, 2));
+  
   // Base64 encode the payment header
   const paymentHeader = btoa(JSON.stringify(paymentPayload));
   
   return paymentHeader;
+}
+
+/**
+ * Resource info from the 402 response
+ */
+interface ResourceInfo {
+  url: string;
+  description?: string;
+  mimeType?: string;
 }
 
 /**
@@ -221,7 +247,8 @@ async function createEvmPaymentHeader(
 async function createSolanaPaymentHeader(
   privateKey: string,
   paymentRequirements: X402PaymentRequirements,
-  x402Version: number
+  x402Version: number,
+  resource?: ResourceInfo
 ): Promise<string> {
   console.log("[x402] Creating Solana payment header for mainnet...");
   
@@ -265,7 +292,12 @@ async function createSolanaPaymentHeader(
   // Get destination (seller) address and mint (token) address
   const toAddress = new PublicKey(paymentRequirements.payTo);
   const mintAddress = new PublicKey(paymentRequirements.asset);
-  const amount = BigInt(paymentRequirements.maxAmountRequired);
+  // Support both 'amount' (x402 v2 spec) and 'maxAmountRequired' (legacy)
+  const amountStr = paymentRequirements.amount || paymentRequirements.maxAmountRequired;
+  if (!amountStr) {
+    throw new Error("amount or maxAmountRequired is required in paymentRequirements");
+  }
+  const amount = BigInt(amountStr);
   
   console.log("[x402] To address:", toAddress.toBase58());
   console.log("[x402] Mint (USDC):", mintAddress.toBase58());
@@ -338,15 +370,31 @@ async function createSolanaPaymentHeader(
   
   console.log("[x402] Transaction serialized, length:", base64Transaction.length);
   
-  // Create payment payload with transaction (Solana x402 format)
+  // Create payment payload with transaction (x402 v2 format)
+  // CRITICAL: v2 requires 'accepted' field with full PaymentRequirements
+  // and 'resource' field with ResourceInfo
   const paymentPayload = {
     x402Version,
-    scheme: paymentRequirements.scheme || "exact",
-    network: paymentRequirements.network,
+    resource: resource || {
+      url: "",
+      description: "",
+      mimeType: "application/json",
+    },
+    accepted: {
+      scheme: paymentRequirements.scheme || "exact",
+      network: paymentRequirements.network,
+      asset: paymentRequirements.asset,
+      amount: paymentRequirements.amount || paymentRequirements.maxAmountRequired || "0",
+      payTo: paymentRequirements.payTo,
+      maxTimeoutSeconds: paymentRequirements.maxTimeoutSeconds || 60,
+      extra: paymentRequirements.extra || {},
+    },
     payload: {
       transaction: base64Transaction,
     },
   };
+  
+  console.log("[x402] Payment payload (v2 format):", JSON.stringify(paymentPayload, null, 2));
   
   // Base64 encode the payment header
   const paymentHeader = btoa(JSON.stringify(paymentPayload));
@@ -427,8 +475,9 @@ export function transformSellerToInfo(seller: X402BazaarSeller): X402SellerInfo 
   // Find the lowest price among all payment options
   let lowestPrice = "Unknown";
   for (const req of (seller.accepts || [])) {
-    if (!req?.maxAmountRequired) continue;
-    const price = parseUsdcPrice(req.maxAmountRequired, req.network || "");
+    const reqAmount = req?.amount || req?.maxAmountRequired;
+    if (!reqAmount) continue;
+    const price = parseUsdcPrice(reqAmount, req.network || "");
     if (price !== "Unknown" && (lowestPrice === "Unknown" || price < lowestPrice)) {
       lowestPrice = price;
     }
@@ -633,13 +682,25 @@ export async function callX402Seller(
     
     // Step 2: Parse payment requirements from 402 response
     const paymentRequirements = await initialResponse.json();
-    console.log("[x402] Payment requirements received");
+    console.log("[x402] Payment requirements received:", JSON.stringify(paymentRequirements, null, 2));
     
     // Get the x402 version
     const x402Version = paymentRequirements.x402Version || 1;
     
+    // Extract resource info from 402 response (required for v2)
+    const resourceInfo: ResourceInfo = paymentRequirements.resource || {
+      url: url.toString(),
+      description: paymentRequirements.description || "",
+      mimeType: paymentRequirements.mimeType || "application/json",
+    };
+    console.log("[x402] Resource info:", JSON.stringify(resourceInfo));
+    
     // Find the best payment option based on available private keys
     const accepts: X402PaymentRequirements[] = paymentRequirements.accepts || [];
+    console.log("[x402] Available payment options count:", accepts.length);
+    for (const option of accepts) {
+      console.log(`[x402] Option - network: ${option.network}, scheme: ${option.scheme}, extra:`, JSON.stringify(option.extra));
+    }
     
     // Determine which payment option to use based on what keys are available
     let paymentOption: X402PaymentRequirements | undefined;
@@ -697,7 +758,7 @@ export async function callX402Seller(
           success: false,
           error: "Solana private key not configured. Set X402_SOLANA_PRIVATE_KEY environment variable.",
           paymentInfo: {
-            cost: parseUsdcPrice(paymentOption.maxAmountRequired, paymentOption.network),
+            cost: parseUsdcPrice(paymentOption.amount || paymentOption.maxAmountRequired, paymentOption.network),
             network: paymentOption.network,
           },
         };
@@ -705,7 +766,8 @@ export async function callX402Seller(
       paymentHeader = await createSolanaPaymentHeader(
         config.solanaPrivateKey,
         paymentOption,
-        x402Version
+        x402Version,
+        resourceInfo
       );
     } else {
       if (!config.evmPrivateKey) {
@@ -713,7 +775,7 @@ export async function callX402Seller(
           success: false,
           error: "EVM private key not configured. Set X402_EVM_PRIVATE_KEY environment variable.",
           paymentInfo: {
-            cost: parseUsdcPrice(paymentOption.maxAmountRequired, paymentOption.network),
+            cost: parseUsdcPrice(paymentOption.amount || paymentOption.maxAmountRequired, paymentOption.network),
             network: paymentOption.network,
           },
         };
@@ -721,19 +783,22 @@ export async function callX402Seller(
       paymentHeader = await createEvmPaymentHeader(
         config.evmPrivateKey,
         paymentOption,
-        x402Version
+        x402Version,
+        resourceInfo
       );
     }
     
     console.log("[x402] Payment header created, making paid request...");
     
-    // Step 4: Make the request with the X-Payment header
+    // Step 4: Make the request with the payment header
+    // For x402 v2, use PAYMENT-SIGNATURE header (also include X-Payment for backwards compatibility)
     const paidResponse = await fetch(url.toString(), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "X-Payment": paymentHeader,
+        "PAYMENT-SIGNATURE": paymentHeader,  // v2 header
+        "X-Payment": paymentHeader,          // Legacy header for backwards compatibility
       },
     });
     
@@ -749,7 +814,7 @@ export async function callX402Seller(
           success: false,
           error: errorJson.error || errorJson.message || `Payment failed: ${paidResponse.status}`,
           paymentInfo: {
-            cost: parseUsdcPrice(paymentOption.maxAmountRequired, paymentOption.network),
+            cost: parseUsdcPrice(paymentOption.amount || paymentOption.maxAmountRequired, paymentOption.network),
             network: paymentOption.network,
           },
         };
@@ -758,7 +823,7 @@ export async function callX402Seller(
           success: false,
           error: `Payment failed (${paidResponse.status}): ${errorText.substring(0, 200)}`,
           paymentInfo: {
-            cost: parseUsdcPrice(paymentOption.maxAmountRequired, paymentOption.network),
+            cost: parseUsdcPrice(paymentOption.amount || paymentOption.maxAmountRequired, paymentOption.network),
             network: paymentOption.network,
           },
         };
@@ -791,7 +856,7 @@ export async function callX402Seller(
       data,
       paymentInfo: {
         txId: paymentReceipt || undefined,
-        cost: parseUsdcPrice(paymentOption.maxAmountRequired, paymentOption.network),
+        cost: parseUsdcPrice(paymentOption.amount || paymentOption.maxAmountRequired, paymentOption.network),
         network: paymentOption.network,
       },
     };

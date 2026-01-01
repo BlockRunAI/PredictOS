@@ -24,6 +24,31 @@ x402 integration unlocks access to a growing ecosystem of paid AI services:
 - **Transparent Pricing** — Every seller displays their price upfront in USDC
 - **Multi-Network Support** — Pay with USDC on Solana (fast, cheap) or Base (EVM compatible)
 
+## 🚀 Predict Agent on Coinbase's x402 Bazaar
+
+**Predict Agent** (our arbitrage discovery agent) is live on **Coinbase's CDP Facilitator**! This makes PredictOS one of the first prediction market intelligence tools available through the x402 protocol.
+
+| | |
+|---|---|
+| **Seller** | Predict Agent (Arb Agent) |
+| **Service** | Live Polymarket vs Kalshi arbitrage opportunities |
+| **Price** | $1 per call |
+| **Network** | Solana |
+| **x402.watch** | [View on x402.watch](https://x402.watch/seller/predictos-live-polymarket-vs-kalshi-arbitrage) |
+| **X (Twitter)** | [@predict_agent](https://x.com/predict_agent) |
+
+> ⚙️ **Facilitator Configuration**
+> 
+> To use Predict Agent, configure the Coinbase CDP facilitator:
+> ```
+> https://api.cdp.coinbase.com/platform/v2/x402
+> ```
+> PayAI Bazaar listing coming soon!
+
+> 💡 **Use it directly in PredictOS!** In the PayAI Seller Modal, use the **Custom Endpoint** input to call Predict Agent directly with its endpoint URL.
+
+---
+
 ## How It Works in PredictOS
 
 ### The PayAI Bazaar

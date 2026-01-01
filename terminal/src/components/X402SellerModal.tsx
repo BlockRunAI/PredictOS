@@ -8,8 +8,11 @@ import {
   Wrench,
   ChevronDown,
   Search,
+  Link,
+  ArrowRight,
 } from "lucide-react";
 import type { X402SellerInfo, ListSellersResponse } from "@/types/x402";
+import { DEFAULT_X402_NETWORK } from "@/types/x402";
 
 interface X402SellerModalProps {
   isOpen: boolean;
@@ -30,6 +33,8 @@ export default function X402SellerModal({
   const [currentPage, setCurrentPage] = useState(1);
   const [totalSellers, setTotalSellers] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [customEndpoint, setCustomEndpoint] = useState("");
+  const [customEndpointError, setCustomEndpointError] = useState("");
 
   // Fetch sellers when modal opens or page changes
   useEffect(() => {
@@ -43,6 +48,8 @@ export default function X402SellerModal({
     if (!isOpen) {
       setSearchQuery("");
       setCurrentPage(1);
+      setCustomEndpoint("");
+      setCustomEndpointError("");
     }
   }, [isOpen]);
 
@@ -114,6 +121,43 @@ export default function X402SellerModal({
     onSelectSeller(seller);
   };
 
+  const handleUseCustomEndpoint = () => {
+    const trimmedEndpoint = customEndpoint.trim();
+    
+    // Validate URL
+    if (!trimmedEndpoint) {
+      setCustomEndpointError("Please enter an endpoint URL");
+      return;
+    }
+
+    try {
+      const url = new URL(trimmedEndpoint);
+      if (!url.protocol.startsWith("http")) {
+        setCustomEndpointError("URL must use http or https protocol");
+        return;
+      }
+    } catch {
+      setCustomEndpointError("Please enter a valid URL");
+      return;
+    }
+
+    setCustomEndpointError("");
+
+    // Create a synthetic X402SellerInfo for the custom endpoint
+    const customSeller: X402SellerInfo = {
+      id: trimmedEndpoint,
+      name: "Custom Endpoint",
+      description: `Custom seller endpoint: ${trimmedEndpoint}`,
+      resourceUrl: trimmedEndpoint,
+      priceUsdc: "Unknown",
+      networks: [DEFAULT_X402_NETWORK],
+      lastUpdated: new Date().toISOString(),
+      inputDescription: "Custom endpoint - price determined by seller",
+    };
+
+    onSelectSeller(customSeller);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -147,6 +191,72 @@ export default function X402SellerModal({
           >
             <XCircle className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Custom Endpoint Input */}
+        <div className="px-6 py-3 border-b border-cyan-500/20 bg-gradient-to-r from-cyan-500/5 to-transparent">
+          <div className="flex items-center gap-2 mb-2">
+            <Link className="w-4 h-4 text-cyan-400" />
+            <span className="text-xs font-medium text-cyan-300">Use Custom Endpoint</span>
+          </div>
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={customEndpoint}
+                onChange={(e) => {
+                  setCustomEndpoint(e.target.value);
+                  setCustomEndpointError("");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleUseCustomEndpoint();
+                  }
+                }}
+                placeholder="https://example.com/api/seller"
+                className={`w-full px-3 py-2 rounded-lg bg-secondary/50 border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 transition-all font-mono ${
+                  customEndpointError
+                    ? "border-red-500/50 focus:border-red-500/50 focus:ring-red-500/30"
+                    : "border-border focus:border-cyan-500/50 focus:ring-cyan-500/30"
+                }`}
+              />
+              {customEndpoint && (
+                <button
+                  onClick={() => {
+                    setCustomEndpoint("");
+                    setCustomEndpointError("");
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <XCircle className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <button
+              onClick={handleUseCustomEndpoint}
+              disabled={!customEndpoint.trim()}
+              className="px-4 py-2 rounded-lg bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 text-sm font-medium hover:bg-cyan-500/30 hover:border-cyan-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+            >
+              <span>Use</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+          {customEndpointError && (
+            <p className="mt-2 text-xs text-red-400 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
+              {customEndpointError}
+            </p>
+          )}
+          <p className="mt-2 text-[10px] text-muted-foreground">
+            Enter a specific seller&apos;s endpoint URL to use directly, bypassing the bazaar listing.
+          </p>
+        </div>
+
+        {/* Divider with "or" */}
+        <div className="flex items-center gap-3 px-6 py-2 bg-secondary/5">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">or browse sellers</span>
+          <div className="flex-1 h-px bg-border" />
         </div>
 
         {/* Search Bar */}

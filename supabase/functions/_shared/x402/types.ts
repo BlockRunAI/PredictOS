@@ -10,13 +10,17 @@ export interface X402PaymentRequirements {
   asset: string;
   /** Description of what's being paid for */
   description?: string;
-  /** Extra metadata like token name and version */
+  /** Extra metadata like token name, version, and feePayer (for Solana) */
   extra?: {
     name?: string;
     version?: string;
+    /** Fee payer address (required for Solana payments) */
+    feePayer?: string;
   };
-  /** Maximum amount required in atomic units */
-  maxAmountRequired: string;
+  /** Amount required in atomic units (x402 v2 spec field name) */
+  amount?: string;
+  /** Maximum amount required in atomic units (legacy/alternative field name) */
+  maxAmountRequired?: string;
   /** Maximum timeout in seconds */
   maxTimeoutSeconds: number;
   /** MIME type of the output */

@@ -353,6 +353,19 @@ Your PredictOS terminal will be running at [http://localhost:3000](http://localh
 <table>
 <tr>
     <td width="120" align="center">
+      <a href="https://x.com/jellyvideochats">
+        <img src="terminal/public/jellyjelly_logo.jpg" alt="JellyJelly" width="80" height="80" />
+      </a>
+    </td>
+    <td>
+      <h3><a href="https://x.com/jellyvideochats">JellyJelly</a></h3>
+      <p><strong>Co-Founder of Venmo building anti-BrainRot social media.</strong> JellyJelly is pioneering Web3 social with a fresh take on engaging, meaningful content.</p>
+      <p>🔗 PredictOS is thrilled to partner with JellyJelly to bring Web3 social into the world of Prediction Markets. This integration turns the JellyJelly ecosystem into a playground for predictions — SocialFi x Prediction Markets is here, and this is just the beginning.</p>
+      <p><a href="https://x.com/jellyvideochats">𝕏 Twitter</a></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="120" align="center">
       <a href="https://www.privy.io/">
         <img src="terminal/public/Privy_logo.png" alt="Privy" width="80" height="80" />
       </a>
@@ -454,6 +467,19 @@ Your PredictOS terminal will be running at [http://localhost:3000](http://localh
       <p><strong>Building AI tools for investors, traders, developers, and institutions — DeFAI.</strong> Hey Anon is launching Pandora, a fully permissionless prediction market where users can create their own markets and earn fees.</p>
       <p>🔗 PredictOS is partnering with Hey Anon to integrate Pandora and bring Alpha Terminal insights to permissionless markets — together we're building the future of decentralized prediction markets.</p>
       <p><a href="https://heyanon.ai/">🌐 Website</a> · <a href="https://x.com/HeyAnonai">𝕏 Twitter</a></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="120" align="center">
+      <a href="https://li.fi/">
+        <img src="terminal/public/LIFI_logo.png" alt="LI.FI" width="80" height="80" />
+      </a>
+    </td>
+    <td>
+      <h3><a href="https://li.fi/">LI.FI</a></h3>
+      <p><strong>The universal market for digital assets.</strong> One API for swaps, bridging, or any action onchain. Integrated by Robinhood Wallet, MetaMask, Phantom + 800 partners.</p>
+      <p>🔗 PredictOS is teaming up with LI.FI to make prediction markets faster and easier with cross-chain swaps & transfers. LI.FI provides one API for seamless swaps and bridging across EVM chains, Solana, and Bitcoin — trusted by Robinhood Wallet, MetaMask, Phantom, and 800+ partners. Together, we're powering optimized swaps, transfers, and payments across the Predict ecosystem, bringing universal liquidity to prediction markets and digital assets.</p>
+      <p><a href="https://li.fi/">🌐 Website</a> · <a href="https://x.com/lifiprotocol">𝕏 Twitter</a></p>
     </td>
   </tr>
 </table>

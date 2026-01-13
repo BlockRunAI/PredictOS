@@ -366,6 +366,19 @@ Your PredictOS terminal will be running at [http://localhost:3000](http://localh
   </tr>
   <tr>
     <td width="120" align="center">
+      <a href="https://iqai.com/">
+        <img src="terminal/public/IQAI.jpg" alt="IQ AI" width="80" height="80" />
+      </a>
+    </td>
+    <td>
+      <h3><a href="https://iqai.com/">IQ AI</a></h3>
+      <p><strong>AI and DeFi technology powered by the IQ token. Agent Tokenization Platform.</strong> IQ AI is at the forefront of decentralized AI infrastructure, combining blockchain knowledge with powerful AI agents.</p>
+      <p>🔗 PredictOS is partnering with IQ AI to advance decentralized AI and prediction markets! As part of this collaboration, we're integrating their powerful AI agent, AIDEN, into our community — making blockchain knowledge more accessible and seamless for prediction market users. PredictOS is also featured on <a href="https://iq.wiki/wiki/predict">IQ.Wiki</a>, the world's largest blockchain encyclopedia.</p>
+      <p><a href="https://iqai.com/">🌐 Website</a> · <a href="https://x.com/IQAICOM">𝕏 Twitter</a></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="120" align="center">
       <a href="https://www.privy.io/">
         <img src="terminal/public/Privy_logo.png" alt="Privy" width="80" height="80" />
       </a>

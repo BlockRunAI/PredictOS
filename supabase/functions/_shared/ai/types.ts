@@ -1,3 +1,73 @@
+// Types for BlockRun API requests and responses (x402 micropayments)
+export interface BlockRunRequestMessage {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
+
+export interface BlockRunRequestPayload {
+  model: string;
+  messages: BlockRunRequestMessage[];
+  temperature?: number | null;
+  top_p?: number | null;
+  max_tokens?: number | null;
+  response_format?: {
+    type: string;
+  };
+  search?: boolean; // Enable xAI Live Search for Grok models
+}
+
+export interface BlockRunPaymentRequirements {
+  x402Version?: number;
+  scheme: string;
+  network: string;
+  asset: string;
+  amount?: string;
+  maxAmountRequired?: string; // Legacy field
+  payTo: string;
+  maxTimeoutSeconds?: number;
+  extra?: {
+    name?: string;
+    version?: string;
+    [key: string]: unknown;
+  };
+}
+
+export interface BlockRunUsage {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+}
+
+export interface BlockRunOutputText {
+  type: "output_text";
+  text: string;
+}
+
+export interface BlockRunMessage {
+  content: BlockRunOutputText[];
+  id: string;
+  role: "assistant";
+  type: "message";
+  status: "completed" | "failed" | "pending";
+}
+
+export interface BlockRunResponseResult {
+  created_at: number;
+  id: string;
+  model: string;
+  object: "response";
+  output: BlockRunMessage[];
+  temperature: number | null;
+  top_p: number | null;
+  usage: BlockRunUsage;
+  status: "completed" | "failed" | "pending";
+  // BlockRun-specific metadata
+  blockrun?: {
+    paymentCost?: string;
+    citations?: string[];
+  };
+}
+
 // Types for Grok API requests and responses
 export interface GrokRequestInput {
   role: "user" | "assistant" | "system";

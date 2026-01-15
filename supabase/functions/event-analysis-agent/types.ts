@@ -87,6 +87,8 @@ export interface EventAnalysisAgentResponse {
     processingTimeMs: number;
     model: string;
     tokensUsed?: number;
+    /** BlockRun-specific: USDC cost for this request (e.g., "$0.001234") */
+    paymentCost?: string;
   };
 }
 
